@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
-    <img src="../assets/logo.png">
-  </div>
+<div class="home">
+
+</div>
 </template>
 
 <script>
