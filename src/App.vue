@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="App">
     <Nav />
     <router-view/>
   </div>
@@ -18,5 +18,10 @@ export default {
 <style lang="scss">
 @import "~bulma";
 
-
+html, body {
+  min-height: 100%;
+}
+#App {
+  
+}
 </style>
