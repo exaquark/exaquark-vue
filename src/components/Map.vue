@@ -2,8 +2,8 @@
   <div class="Map">
 
     <gmap-map
-      :center="{lat:10, lng:10}"
-      :zoom="7"
+      :center="geo"
+      :zoom="zoom"
       class="map-canvas"
     ></gmap-map>
 
@@ -14,13 +14,25 @@
 import * as VueGoogleMaps from 'vue2-google-maps'
 import Vue from 'vue'
 
+const YOUR_API_TOKEN = process.env.MAPS.API_TOKEN // /config/prod.env.js
+
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'YOUR_API_TOKEN'
+    key: YOUR_API_TOKEN
   }
 })
+
 export default {
-  name: 'Map'
+  name: 'Map',
+  data: () => {
+    return {
+      geo: {
+        lat: 1.3521,
+        lng: 103.8198
+      },
+      zoom: 11
+    }
+  }
 }
 </script>
 <style scoped lang="scss">
