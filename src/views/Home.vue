@@ -8,8 +8,8 @@
 
     <div class="column is-3">
       <div class="section">
-        <div class="control is-expanded">
-        
+        <div class="" v-for="(neighbor) in neighbors" :key="neighbor.iid">
+          {{neighbor.iid}}
         </div>
       </div>
     </div>
@@ -19,11 +19,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Radar from '@/components/Radar.vue'
 export default {
   name: 'Home',
   components: {
     Radar
+  },
+  computed: {
+    ...mapGetters([
+      'neighbors'
+    ])
   },
   data: () => {
     return {
