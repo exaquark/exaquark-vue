@@ -3,8 +3,8 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-var mockBots = []
 var createMockBots = function () {
+  let mockBots = []
   for (var i = 0; i < 9; i++) {
     mockBots.push({
       entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
@@ -30,11 +30,11 @@ var createMockBots = function () {
       }
     })
   }
+  return mockBots
 }
-createMockBots()
 
 const state = {
-  neighbors: mockBots
+  neighbors: createMockBots()
 }
 const mutations = {
 
