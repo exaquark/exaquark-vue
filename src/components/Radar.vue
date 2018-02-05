@@ -1,7 +1,14 @@
 <template>
   <div class="Radar">
 
-    <gmap-map :center="geo" :zoom="zoom" class="map-canvas" @center_changed="updateCenter">
+    <gmap-map :center="geo" :zoom="zoom" class="map-canvas" @center_changed="updateCenter" :options="defaultMapOptions">
+      <gmap-marker
+        key="currentUser"
+        :position="geo"
+        :clickable="false"
+        :draggable="false"
+        :icon="defaultIconOptions"
+      />
       <google-cluster>
         <RadarMarker v-for="neighbor in markers" :key="neighbor.iid" :entityState="neighbor" />
       </google-cluster>
@@ -40,6 +47,20 @@ export default {
       required: false
     }
   },
+  data: () => {
+    return {
+      defaultIconOptions: {
+        url: '/static/starship.png',
+        scaledSize: {width: 100, height: 100, f: 'px', b: 'px'}
+      },
+      defaultMapOptions: {
+        clickableIcons: false,
+        streetViewControl: false,
+        panControlOptions: false,
+        gestureHandling: 'greedy'
+      }
+    }
+  },
   components: {
     RadarMarker
   },
@@ -52,8 +73,9 @@ export default {
     }
   },
   methods: {
+    // temp function to mimic movement in a world
     updateCenter: function (newCenter) {
-      console.log('newCenter', newCenter)
+      this.$emit('onMove', newCenter)
     }
   }
 }

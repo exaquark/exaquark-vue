@@ -3,7 +3,7 @@
   <div class="columns is-gapless">
 
     <div class="column is-9">
-      <Radar :lat="geo.lat" :lng="geo.lng" :markers="neighbors" />
+      <Radar :lat="geo.lat" :lng="geo.lng" :markers="neighbors" @onMove="onMapMove" />
     </div>
 
     <div class="column is-3 sidebar">
@@ -38,6 +38,12 @@ export default {
         lat: 1.288118,
         lng: 103.847543
       }
+    }
+  },
+  methods: {
+    onMapMove: function (newCenter) {
+      this.geo.lat = newCenter.lat()
+      this.geo.lng = newCenter.lng()
     }
   }
 }
