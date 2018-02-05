@@ -6,11 +6,10 @@
       <Radar :lat="geo.lat" :lng="geo.lng" />
     </div>
 
-    <div class="column is-3">
-      <div class="section">
-        <div class="" v-for="(neighbor) in neighbors" :key="neighbor.iid">
-          {{neighbor.iid}}
-        </div>
+    <div class="column is-3 sidebar">
+      <div class="neighbors">
+        <h6 class="heading">Neighbors</h6>
+        <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :entityState="neighbor" />
       </div>
     </div>
 
@@ -20,10 +19,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 export default {
   name: 'Home',
   components: {
+    NeighborListItem,
     Radar
   },
   computed: {
@@ -43,11 +44,18 @@ export default {
 </script>
 
 <style lang="scss">
+$screenHeightWithoutMenu: calc(100vh - 3.25rem - 2px); // height of Navbar and border
 .Home {
   .column {
     position: relative;
-    min-height: calc(100vh - 3.25rem - 2px); // height of Navbar and border
+    min-height: $screenHeightWithoutMenu;
     overflow: hidden;
+  }
+  .neighbors {
+    padding: 10px;
+      height: $screenHeightWithoutMenu;
+      overflow: scroll;
+      overflow-y: scroll;
   }
 }
 </style>

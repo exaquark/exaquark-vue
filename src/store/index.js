@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 var createMockBots = function () {
   let mockBots = []
-  for (var i = 0; i < 9; i++) {
+  for (var i = 0; i < 12; i++) {
     mockBots.push({
       entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
       iid: Math.floor(Math.random() * 10000000).toString(), // {string} required: instance ID - each user can have multiple "instances". For example they can be logged in to their browser and their phone at the same time
