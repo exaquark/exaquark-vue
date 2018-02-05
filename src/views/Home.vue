@@ -1,31 +1,29 @@
 <template>
 <div class="Home">
   <div class="columns is-gapless">
+
     <div class="column is-9">
       <Radar :lat="geo.lat" :lng="geo.lng" />
     </div>
+
     <div class="column is-3">
       <div class="section">
-
         <div class="control is-expanded">
-          <AddressLookup  />
+        
         </div>
-
       </div>
-
     </div>
+
   </div>
 </div>
 </template>
 
 <script>
-import AddressLookup from '@/components/AddressLookup.vue'
 import Radar from '@/components/Radar.vue'
 export default {
-  name: 'home',
+  name: 'Home',
   components: {
-    Radar,
-    AddressLookup
+    Radar
   },
   data: () => {
     return {
