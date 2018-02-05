@@ -3,7 +3,7 @@
   <div class="columns is-gapless">
 
     <div class="column is-9">
-      <Radar :lat="geo.lat" :lng="geo.lng" />
+      <Radar :lat="geo.lat" :lng="geo.lng" :markers="neighbors" />
     </div>
 
     <div class="column is-3 sidebar">

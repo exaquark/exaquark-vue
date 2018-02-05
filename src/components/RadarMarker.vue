@@ -1,14 +1,12 @@
 <template>
   <div class="RadarMarker">
 
-    <!-- <gmap-marker
-      :key="index"
-      v-for="(m, index) in markers"
-      :position="m.position"
+    <gmap-marker
+      :key="entityState.iid"
+      :position="position"
       :clickable="true"
-      :draggable="true"
-      @click="center=m.position"
-    ></gmap-marker> -->
+      :draggable="false"
+    />
 
   </div>
 </template>
@@ -16,8 +14,16 @@
 <script>
 export default {
   name: 'RadarMarker',
-  props: () => {
-    return { }
+  props: {
+    entityState: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    position: function () {
+      return this.entityState.geo
+    }
   }
 }
 </script>
