@@ -2,6 +2,7 @@
 module.exports = {
   NODE_ENV: '"production"',
   MAPS: {
-    API_TOKEN: '"YOUR_API_TOKEN"',
+    API_TOKEN: '"AIzaSyBzlLYISGjL_ovJwAehh6ydhB56fCCpPQw"', 
+    libraries: 'places'
   },
 }
