@@ -1,7 +1,9 @@
 <template>
   <div class="NeighborListItem">
     <div class="box">
-    {{entityState.iid}}
+    {{entityState.iid}}<br>
+    {{entityState.geo.lat}}<br>
+    {{entityState.geo.lng}}
     </div>
   </div>
 </template>

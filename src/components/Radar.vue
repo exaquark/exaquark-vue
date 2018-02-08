@@ -50,8 +50,11 @@ export default {
   data: () => {
     return {
       defaultIconOptions: {
-        url: '/static/starship.png',
-        scaledSize: {width: 100, height: 100, f: 'px', b: 'px'}
+        path: 'M0,5a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
+        fillColor: '#425AFF',
+        fillOpacity: 0.5,
+        strokeWeight: 0,
+        scale: 3
       },
       defaultMapOptions: {
         clickableIcons: false,
