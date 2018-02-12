@@ -19,11 +19,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import ExaQuarkJs from './lib/exaquark-js'
+import ExaQuarkJs from 'exaquark-js'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 var exaQuark = null
-export default {
+var Home = {
   name: 'Home',
   components: {
     NeighborListItem,
@@ -36,8 +36,8 @@ export default {
     let options = {
       entityId: 'ENTITY_ID', // required
       universe: 'UNIVERSE_ID', // optional: defaults to sandbox
-      transport: 'WebSocket', // optional: WebSocket | UDP
-      logger: (msg, data) => { console.log(msg, data) } // optional: attach your own logger
+      transport: 'WebSocket' // optional: WebSocket | UDP
+      // logger: (msg, data) => { console.log(msg, data) } // optional: attach your own logger
     }
 
     exaQuark = new ExaQuarkJs(exaquarkUrl, apiKey, options)
@@ -103,9 +103,30 @@ export default {
       this.entityState.geo.lat = newCenter.lat()
       this.entityState.geo.lng = newCenter.lng()
       // exaQuark.push('update:state', this.entityState)
+    },
+    rotate: function () {
+      console.log('called')
+    },
+    moveForward: function () {
+      // double meters = 50;
+      // double coef = meters * 0.0000089;
+      // double new_lat = my_lat + coef;
+      // double new_long = my_long + coef / Math.cos(my_lat * 0.018);
     }
   }
 }
+export default Home
+window.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowUp':
+      console.log('e', e)
+      break
+    case 'ArrowRight':
+      console.log('Home', Home)
+      Home.methods.rotate()
+      break
+  }
+})
 </script>
 
 <style lang="scss">
