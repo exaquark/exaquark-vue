@@ -35,7 +35,7 @@
       <div class="modal-content">
         <div class="box">
           Navigation
-          <AddressLookup  />
+          <AddressLookup @onChange="setAddressGeo" />
         </div>
       </div>
       <button class="modal-close is-large" aria-label="close" @click="toggleLocationModal()"></button>
@@ -76,6 +76,10 @@ export default {
     },
     toggleSettingsModal: function () {
       this.showSettingsModal = !this.showSettingsModal
+    },
+    setAddressGeo: function (payload) {
+      this.$store.commit('SET_ADDRESS_GEO', payload)
+      this.toggleLocationModal()
     }
   }
 }

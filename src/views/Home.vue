@@ -89,7 +89,8 @@ var Home = {
   },
   computed: {
     ...mapGetters([
-      'neighbors'
+      'neighbors',
+      'addressGeo'
     ])
   },
   data: () => {
@@ -119,6 +120,12 @@ var Home = {
       }
     }
   },
+  watch: {
+    addressGeo: function () {
+      this.entityState.geo.lat = this.addressGeo.lat
+      this.entityState.geo.lng = this.addressGeo.lng
+    }
+  },
   methods: {
     ...mapActions([
       'updateNeighbors'
@@ -129,9 +136,6 @@ var Home = {
     onMapMove: function (newCenter) {
       this.entityState.geo.lat = newCenter.lat()
       this.entityState.geo.lng = newCenter.lng()
-    },
-    rotate: function () {
-      console.log('called')
     },
     move: function (lat, lng) {
       this.entityState.geo.lat = lat

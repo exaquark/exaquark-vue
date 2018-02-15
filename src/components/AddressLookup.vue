@@ -1,6 +1,6 @@
 <template>
   <div class="AddressLookup">
-    <gmap-autocomplete @place_changed="emitPlace" class="input" placeholder="Go to address"> </gmap-autocomplete>
+    <gmap-autocomplete @place_changed="emitPlace" class="input" placeholder="Go to address" > </gmap-autocomplete>
   </div>
 </template>
 
@@ -14,7 +14,10 @@ export default {
   },
   methods: {
     emitPlace: function (place) {
-      console.log('place', place)
+      this.$emit('onChange', {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      })
     }
   }
 }
