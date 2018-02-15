@@ -6,6 +6,7 @@
       :position="position"
       :clickable="true"
       :draggable="false"
+      :icon="defaultIconOptions"
     />
 
   </div>
@@ -18,6 +19,15 @@ export default {
     entityState: {
       type: Object,
       required: true
+    }
+  },
+  data: () => {
+    return {
+      defaultIconOptions: {
+        url: 'https://media.giphy.com/media/r8AKGSaw7qRRS/giphy.gif',
+        scaledSize: {width: 50, height: 50, f: 'px', b: 'px'},
+        rotation: 45
+      }
     }
   },
   computed: {
