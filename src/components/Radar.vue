@@ -48,8 +48,8 @@ export default {
   data: () => {
     return {
       defaultIconOptions: {
-        url: '/static/marker-me.svg',
-        scaledSize: {width: 200, height: 106, f: 'px', b: 'px'},
+        url: 'https://i.imgur.com/zRERkjv.gif',
+        scaledSize: {width: 50, height: 50, f: 'px', b: 'px'},
         rotation: 45
       },
       // defaultIconOptions: {

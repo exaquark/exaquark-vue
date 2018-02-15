@@ -17,6 +17,7 @@
     "bulma": "^0.6.2",
     "exaquark-js": "^1.0.6",
     "jsonp": "^0.2.1",
+    "keymaster": "^1.6.2",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue2-google-maps": "^0.8.4",
