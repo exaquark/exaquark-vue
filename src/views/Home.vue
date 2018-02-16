@@ -23,14 +23,16 @@ import ExaQuarkJs from 'exaquark-js'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 import key from 'keymaster'
+import { getFinalLatLon } from '@/utils/geometry'
 var exaQuark = null
 
-const MOVE_DISTANCE = 100
+const MOVE_DISTANCE = 0.5
 const ANGLES = {
   right: 0,
   up: 90,
   left: 180,
-  down: 270
+  down: 270,
+  upRight: 45
 }
 
 var Home = {
@@ -70,22 +72,7 @@ var Home = {
     }).catch('err', err => { console.error(err) })
     exaQuark.bind(this.getState)
 
-    key('up, w', () => {
-      let latLng = this.getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.up)
-      this.move(latLng[0], latLng[1])
-    })
-    key('down, s', () => {
-      let latLng = this.getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.down)
-      this.move(latLng[0], latLng[1])
-    })
-    key('left, a', () => {
-      let latLng = this.getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.left)
-      this.move(latLng[0], latLng[1])
-    })
-    key('right, d', () => {
-      let latLng = this.getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.right)
-      this.move(latLng[0], latLng[1])
-    })
+    this.startEventLoop()
   },
   computed: {
     ...mapGetters([
@@ -133,6 +120,26 @@ var Home = {
     getState: function () {
       return this.entityState
     },
+    startEventLoop: function () {
+      setInterval(() => {
+        if (key.isPressed('up') || key.isPressed('w')) {
+          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.up)
+          this.move(latLng[0], latLng[1])
+        }
+        if (key.isPressed('down') || key.isPressed('s')) {
+          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.down)
+          this.move(latLng[0], latLng[1])
+        }
+        if (key.isPressed('left') || key.isPressed('a')) {
+          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.left)
+          this.move(latLng[0], latLng[1])
+        }
+        if (key.isPressed('right') || key.isPressed('d')) {
+          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.right)
+          this.move(latLng[0], latLng[1])
+        }
+      }, 50)
+    },
     onMapMove: function (newCenter) {
       this.entityState.geo.lat = newCenter.lat()
       this.entityState.geo.lng = newCenter.lng()
@@ -140,30 +147,6 @@ var Home = {
     move: function (lat, lng) {
       this.entityState.geo.lat = lat
       this.entityState.geo.lng = lng
-    },
-    getFinalLatLon: function (lat1, lon1, distance, angle) {
-      let deg2rad = (deg) => {
-        return deg * (Math.PI / 180)
-      }
-      // dy = R*sin(theta)
-      let dy = distance * Math.sin(deg2rad(angle))
-      let deltaLatitude = dy / 110574
-      // One degree of latitude on the Earth's surface equals (110574 meters
-      deltaLatitude = parseFloat(deltaLatitude.toFixed(6))
-
-      // final latitude = start_latitude + delta_latitude
-      let lat2 = lat1 + deltaLatitude
-
-      // dx = R*cos(theta)
-      let dx = distance * Math.cos(deg2rad(angle))
-      // One degree of longitude equals 111321 meters (at the equator)
-      let deltaLongitude = dx / (111321 * Math.cos(deg2rad(lat1)))
-      deltaLongitude = parseFloat(deltaLongitude.toFixed(6))
-
-      // final longitude = start_longitude + deltaLongitude
-      let lon2 = lon1 + deltaLongitude
-
-      return [lat2, lon2]
     }
   }
 }

@@ -22,6 +22,7 @@ import RadarMarker from '@/components/RadarMarker.vue'
 Vue.component('google-map', VueGoogleMaps.Map)
 Vue.component('google-marker', VueGoogleMaps.Marker)
 Vue.component('google-cluster', VueGoogleMaps.Cluster)
+const DEFAULT_ZOOM_LEVEL = 19
 export default {
   name: 'Radar',
   props: {
@@ -35,9 +36,9 @@ export default {
     },
     zoom: {
       type: Number,
-      default: 17,
+      default: DEFAULT_ZOOM_LEVEL,
       validator: function (value) {
-        return value <= 17
+        return value <= DEFAULT_ZOOM_LEVEL
       }
     },
     markers: {
@@ -49,7 +50,7 @@ export default {
     return {
       defaultIconOptions: {
         url: 'https://i.imgur.com/zRERkjv.gif',
-        scaledSize: {width: 50, height: 50, f: 'px', b: 'px'},
+        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'},
         rotation: 45
       },
       // defaultIconOptions: {
@@ -61,14 +62,14 @@ export default {
       // },
       defaultMapOptions: {
         clickableIcons: false,
-        streetViewControl: false,
+        streetViewControl: true,
         panControlOptions: false,
-        gestureHandling: 'greedy',
-        disableDefaultUI: true,
+        // gestureHandling: 'greedy',
+        disableDefaultUI: false,
         scrollwheel: false,
         navigationControl: false,
         mapTypeControl: false,
-        scaleControl: false,
+        scaleControl: true,
         draggable: false,
         styles: [
           {
