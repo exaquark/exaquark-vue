@@ -16,12 +16,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Vue from 'vue'
 import * as VueGoogleMaps from 'vue2-google-maps'
 import RadarMarker from '@/components/RadarMarker.vue'
 Vue.component('google-map', VueGoogleMaps.Map)
 Vue.component('google-marker', VueGoogleMaps.Marker)
-Vue.component('google-cluster', VueGoogleMaps.Cluster)
+const DEFAULT_AVATAR = process.env.AVATARS.ME // /config/prod.env.js
 const DEFAULT_ZOOM_LEVEL = 19
 export default {
   name: 'Radar',
@@ -48,18 +49,6 @@ export default {
   },
   data: () => {
     return {
-      defaultIconOptions: {
-        url: 'https://i.imgur.com/zRERkjv.gif',
-        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'},
-        rotation: 45
-      },
-      // defaultIconOptions: {
-      //   path: 'M0,5a5,5 0 1,0 10,0a5,5 0 1,0 -10,0',
-      //   fillColor: '#425AFF',
-      //   fillOpacity: 0.5,
-      //   strokeWeight: 0,
-      //   scale: 3
-      // },
       defaultMapOptions: {
         clickableIcons: false,
         streetViewControl: true,
@@ -166,10 +155,23 @@ export default {
     RadarMarker
   },
   computed: {
+    ...mapGetters([
+      'customAvatar'
+    ]),
     geo: function () {
       return {
         lat: this.lat,
         lng: this.lng
+      }
+    },
+    defaultIconOptions: function () {
+      let avatarUrl = this.customAvatar || DEFAULT_AVATAR
+      console.log('avatarUrl', avatarUrl)
+      // let avatarUrl = this.customAvatar || DEFAULT_AVATAR
+      return {
+        url: avatarUrl,
+        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'},
+        rotation: 45
       }
     }
   },

@@ -3,7 +3,12 @@
   <div class="columns is-gapless">
 
     <div class="column is-9">
-      <Radar :lat="entityState.geo.lat" :lng="entityState.geo.lng" :markers="neighbors" @onMove="onMapMove" />
+      <Radar v-if="entityState.geo.lat && entityState.geo.lng"
+        :lat="entityState.geo.lat"
+        :lng="entityState.geo.lng"
+        :customAvatar="customAvatar"
+        :markers="neighbors"
+      />
     </div>
 
     <div class="column is-3 sidebar">
@@ -18,7 +23,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import ExaQuarkJs from 'exaquark-js'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
@@ -54,20 +59,17 @@ var Home = {
 
     exaQuark = new ExaQuarkJs(exaquarkUrl, apiKey, options)
     exaQuark.on('neighbor:enter', entityState => {
-      // console.log('neighbor:enter', entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })
     exaQuark.on('neighbor:leave', entityState => {
-      // console.log('neighbor:leave', entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })
     exaQuark.on('neighbor:updates', entityState => {
-      // console.log('neighbor:updates', exaQuark.neighbors())
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {
-      this.iid = iid
+      this.$store.commit('SET_IID', iid)
       exaQuark.push('ask:neighbours')
     }).catch('err', err => { console.error(err) })
     exaQuark.bind(this.getState)
@@ -76,47 +78,16 @@ var Home = {
   },
   computed: {
     ...mapGetters([
-      'neighbors',
-      'addressGeo'
+      'addressGeo',
+      'customAvatar',
+      'entityState',
+      'neighbors'
     ])
   },
   data: () => {
-    return {
-      iid: null,
-      entityState: {
-        entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
-        universe: 'MOCK_UNIVERSE_ID', // {string} required:  which universe is the entitiy in
-        delaunay: 1, // {number} 1 - 5 - delaunay is the "distance" of your neighbor. It isn't required when sending to exaQuark, however you will receive it in notifications about your neighbors
-        geo: {
-          lat: 1.2883, // {double} required: latitude
-          lng: 103.8475, // {double} required: longitude
-          altitude: 0, // {double} optional: altitude in meters - can be negative
-          rotation: [ 2, 5, 19 ] // {Array of doubles} optional: all in degrees. Default facing north
-        },
-        properties: {
-          avatarId: 'MOCK_AVATAR_ID', // {string} required: the avatar your user has selected
-          sound: true, // {boolean} optional: defaults to true. false === mute
-          mic: true, // {boolean} optional: defaults to true. false === muted microphone
-          virtualPosition: false, // {boolean} optional: defaults to false. Is this person physically in the position that they are in the digital universe. (true === they are not physically present there)
-          entityType: 'HUMAN' // {string} optional: defaults to 'human'. Options: 'HUMAN' | 'BOT' | 'DRONE'
-        },
-        universeState: {
-          // developer defined state for their universe
-          // you can use this to pass arbitrary data to other entities in your neighborhood
-        }
-      }
-    }
-  },
-  watch: {
-    addressGeo: function () {
-      this.entityState.geo.lat = this.addressGeo.lat
-      this.entityState.geo.lng = this.addressGeo.lng
-    }
+    return {}
   },
   methods: {
-    ...mapActions([
-      'updateNeighbors'
-    ]),
     getState: function () {
       return this.entityState
     },
@@ -140,13 +111,11 @@ var Home = {
         }
       }, 50)
     },
-    onMapMove: function (newCenter) {
-      this.entityState.geo.lat = newCenter.lat()
-      this.entityState.geo.lng = newCenter.lng()
-    },
     move: function (lat, lng) {
-      this.entityState.geo.lat = lat
-      this.entityState.geo.lng = lng
+      this.$store.commit('SET_POSITION', {
+        lat: lat,
+        lng: lng
+      })
     }
   }
 }

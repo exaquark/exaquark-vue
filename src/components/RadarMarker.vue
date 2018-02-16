@@ -25,7 +25,7 @@ export default {
     return {
       defaultIconOptions: {
         url: 'https://media.giphy.com/media/r8AKGSaw7qRRS/giphy.gif',
-        scaledSize: {width: 50, height: 50, f: 'px', b: 'px'},
+        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'},
         rotation: 45
       }
     }

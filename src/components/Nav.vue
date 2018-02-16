@@ -40,31 +40,24 @@
       </div>
       <button class="modal-close is-large" aria-label="close" @click="toggleLocationModal()"></button>
     </div>
-    <div class="modal" v-bind:class="{ 'is-active': showSettingsModal }">
-      <div class="modal-background"></div>
-      <div class="modal-content">
-        <div class="box">
-          Settings: consider moving to new route
-        </div>
-      </div>
-      <button class="modal-close is-large" aria-label="close" @click="toggleSettingsModal()"></button>
-    </div>
 
+    <Settings />
   </div>
 </template>
 
 <script>
 import AddressLookup from '@/components/AddressLookup.vue'
+import Settings from '@/components/Settings.vue'
 export default {
   name: 'Nav',
   components: {
-    AddressLookup
+    AddressLookup,
+    Settings
   },
   data: function () {
     return {
       showMobileMenu: false,
-      showLocationModal: false,
-      showSettingsModal: false
+      showLocationModal: false
     }
   },
   methods: {
@@ -75,7 +68,7 @@ export default {
       this.showLocationModal = !this.showLocationModal
     },
     toggleSettingsModal: function () {
-      this.showSettingsModal = !this.showSettingsModal
+      this.$store.commit('TOGGLE_SETTINGS_MODAL')
     },
     setAddressGeo: function (payload) {
       this.$store.commit('SET_ADDRESS_GEO', payload)
