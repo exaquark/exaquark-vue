@@ -47,7 +47,7 @@ var Home = {
     Radar
   },
   created: function () {
-    const exaquarkUrl = 'http://163.172.171.14:9999' // https://enter.exaquark.net
+    const exaQuarkUrl = 'https://enter.exaquark.com'
 
     var apiKey = 'YOUR_API_KEY' // required
     let options = {
@@ -57,7 +57,7 @@ var Home = {
       // logger: (msg, data) => { console.log(msg, data) } // optional: attach your own logger
     }
 
-    exaQuark = new ExaQuarkJs(exaquarkUrl, apiKey, options)
+    exaQuark = new ExaQuarkJs(exaQuarkUrl, apiKey, options)
     exaQuark.on('neighbor:enter', entityState => {
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })

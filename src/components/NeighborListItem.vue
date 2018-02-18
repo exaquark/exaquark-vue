@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import ExaQuarkJs from 'exaquark-js'
 const DEFAULT_AVATAR = process.env.AVATARS.NEIGHBORS // /config/prod.env.js
 export default {
   name: 'NeighborListItem',
@@ -29,6 +30,7 @@ export default {
   },
   computed: {
     avatarUrl: function () {
+      console.log('ExaQuarkJs', ExaQuarkJs.getNeighborsByMaxDistance)
       let url = (this.entityState.customState && this.entityState.customState.avatarUrl) ? this.entityState.customState.avatarUrl : DEFAULT_AVATAR
       return url
     }
