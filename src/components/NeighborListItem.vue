@@ -9,8 +9,8 @@
           </p>
         </figure>
         <div class="media-content">
-          <strong>{{neighborState.iid}}</strong>
-          <h4 class="heading is-5">{{distance}}</h4>
+          <strong>{{neighborState.properties.displayName || neighborState.iid}}</strong>
+          <h4 class="heading is-5">{{distance}} km</h4>
         </div>
       </article>
     </div>
@@ -19,7 +19,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getDistanceBetweenEntities } from 'exaquark-js/lib/helpers.js'
+import { getDistanceBetweenEntities } from 'exaquark-js/helpers'
 const DEFAULT_AVATAR = process.env.AVATARS.NEIGHBORS // /config/prod.env.js
 export default {
   name: 'NeighborListItem',
@@ -38,7 +38,8 @@ export default {
       return url
     },
     distance: function () {
-      return getDistanceBetweenEntities(this.entityState, this.neighborState) * 1000
+      let distance = getDistanceBetweenEntities(this.entityState, this.neighborState).toFixed(2)
+      return distance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     }
   }
 }

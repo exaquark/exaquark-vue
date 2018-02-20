@@ -54,6 +54,7 @@ export default {
         streetViewControl: true,
         panControlOptions: false,
         // gestureHandling: 'greedy',
+        keyboardShortcuts: false,
         disableDefaultUI: false,
         scrollwheel: false,
         navigationControl: false,

@@ -5,6 +5,17 @@
     <div class="modal-background"></div>
     <div class="modal-content">
       <div class="box">
+        <p>Your IID: {{iid}} <br> <br> </p>
+
+        <label class="label">Your display name</label>
+        <div class="field has-addons">
+          <div class="control is-expanded">
+            <input class="input is-fullwidth" type="text" v-model="displayName">
+          </div>
+          <div class="control">
+            <a class="button is-info" @click="updateDisplayName()">Update</a>
+          </div>
+        </div>
 
         <label class="label">Your avatar</label>
         <div class="field has-addons">
@@ -34,11 +45,14 @@ export default {
   data: () => {
     return {
       avatar: '',
-      avatarPlaceholder: DEFAULT_AVATAR
+      avatarPlaceholder: DEFAULT_AVATAR,
+      displayName: ''
     }
   },
   computed: {
     ...mapGetters([
+      'iid',
+      'entityState',
       'settingsModalVisible'
     ])
   },
@@ -48,6 +62,11 @@ export default {
     },
     updateAvatar: function () {
       this.$store.commit('SET_CUSTOM_AVATAR', this.avatar)
+      this.$store.commit('TOGGLE_SETTINGS_MODAL')
+    },
+    updateDisplayName: function () {
+      this.$store.commit('SET_DISPLAY_NAME', this.displayName)
+      console.log('this.entityState.properties.displayName', this.entityState.properties.displayName)
       this.$store.commit('TOGGLE_SETTINGS_MODAL')
     }
   }

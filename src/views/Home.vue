@@ -24,7 +24,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ExaQuarkJs from 'exaquark-js'
+import ExaQuarkJs from 'exaquark-js/core'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 import key from 'keymaster'
@@ -65,6 +65,7 @@ var Home = {
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })
     exaQuark.on('neighbor:updates', entityState => {
+      // if (entityState.properties.displayName) console.log('entityState.properties.displayName', entityState.properties.displayName)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
     })
 
@@ -89,6 +90,7 @@ var Home = {
   },
   methods: {
     getState: function () {
+      if (this.entityState.properties.displayName) console.log('this.displayName', this.entityState.properties.displayName)
       return this.entityState
     },
     startEventLoop: function () {

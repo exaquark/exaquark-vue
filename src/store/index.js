@@ -16,7 +16,7 @@ const state = {
       rotation: [ 2, 5, 19 ] // {Array of doubles} optional: all in degrees. Default facing north
     },
     properties: {
-      displayName: 'A_USER_NAME', // {string} required: a human readable name to be displayed
+      displayName: '', // {string} required: a human readable name to be displayed
       sound: true, // {boolean} optional: defaults to true. false === mute
       mic: true, // {boolean} optional: defaults to true. false === muted microphone
       virtualPosition: false, // {boolean} optional: defaults to false. Is this person physically in the position that they are in the digital universe. (true === they are not physically present there)
@@ -38,6 +38,9 @@ const mutations = {
   SET_CUSTOM_AVATAR (state, payload) {
     state.settings.customAvatar = payload
     state.entityState.customState.avatarUrl = payload
+  },
+  SET_DISPLAY_NAME (state, payload) {
+    state.entityState.properties.displayName = payload
   },
   SET_IID (state, payload) {
     state.iid = payload
