@@ -3,6 +3,7 @@
   <div class="columns is-gapless">
 
     <div class="column is-9">
+      <Canvas />
     </div>
 
     <div class="column is-3 sidebar">
@@ -27,10 +28,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import ExaQuarkJs from 'exaquark-js/core'
+import key from 'keymaster'
+
+import { getFinalLatLon } from '@/utils/geometry'
+import Canvas from '@/components/Canvas.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
-import key from 'keymaster'
-import { getFinalLatLon } from '@/utils/geometry'
 var exaQuark = null
 
 const MOVE_DISTANCE = 0.5
@@ -45,6 +48,7 @@ const ANGLES = {
 var Home = {
   name: 'Home',
   components: {
+    Canvas,
     NeighborListItem,
     Radar
   },
