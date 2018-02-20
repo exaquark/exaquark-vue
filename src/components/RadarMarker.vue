@@ -2,7 +2,7 @@
   <div class="RadarMarker">
 
     <gmap-marker
-      :key="entityState.iid"
+      :key="neighborState.iid"
       :position="position"
       :clickable="true"
       :draggable="false"
@@ -13,26 +13,33 @@
 </template>
 
 <script>
+const DEFAULT_AVATAR = process.env.AVATARS.NEIGHBORS // /config/prod.env.js
 export default {
   name: 'RadarMarker',
   props: {
-    entityState: {
+    neighborState: {
       type: Object,
       required: true
     }
   },
   data: () => {
     return {
-      defaultIconOptions: {
-        url: 'https://media.giphy.com/media/r8AKGSaw7qRRS/giphy.gif',
-        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'},
-        rotation: 45
-      }
     }
   },
   computed: {
     position: function () {
-      return this.entityState.geo
+      return this.neighborState.geo
+    },
+    avatarUrl: function () {
+      let url = (this.neighborState.customState && this.neighborState.customState.avatarUrl) ? this.neighborState.customState.avatarUrl : DEFAULT_AVATAR
+      return url
+    },
+    defaultIconOptions: function () {
+      let url = (this.neighborState.customState && this.neighborState.customState.avatarUrl) ? this.neighborState.customState.avatarUrl : DEFAULT_AVATAR
+      return {
+        url: url,
+        scaledSize: {width: 30, height: 30, f: 'px', b: 'px'}
+      }
     }
   }
 }

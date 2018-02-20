@@ -9,7 +9,7 @@
         :draggable="false"
         :icon="defaultIconOptions"
       />
-      <RadarMarker v-for="neighbor in markers" :key="neighbor.iid" :entityState="neighbor" />
+      <RadarMarker v-for="neighbor in markers" :key="neighbor.iid" :neighborState="neighbor" />
     </gmap-map>
 
   </div>
@@ -167,7 +167,6 @@ export default {
     },
     defaultIconOptions: function () {
       let avatarUrl = this.customAvatar || DEFAULT_AVATAR
-      console.log('avatarUrl', avatarUrl)
       // let avatarUrl = this.customAvatar || DEFAULT_AVATAR
       return {
         url: avatarUrl,
@@ -186,7 +185,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .Radar {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 100%;
   .map-canvas {

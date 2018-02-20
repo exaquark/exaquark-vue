@@ -3,15 +3,17 @@
   <div class="columns is-gapless">
 
     <div class="column is-9">
-      <Radar v-if="entityState.geo.lat && entityState.geo.lng"
-        :lat="entityState.geo.lat"
-        :lng="entityState.geo.lng"
-        :customAvatar="customAvatar"
-        :markers="neighbors"
-      />
     </div>
 
     <div class="column is-3 sidebar">
+      <div class="radarContainer">
+        <Radar v-if="entityState.geo.lat && entityState.geo.lng"
+          :lat="entityState.geo.lat"
+          :lng="entityState.geo.lng"
+          :customAvatar="customAvatar"
+          :markers="neighbors"
+        />
+      </div>
       <div class="neighbors">
         <h6 class="heading">Neighbors</h6>
         <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :neighborState="neighbor" />
@@ -132,9 +134,12 @@ $screenHeightWithoutMenu: calc(100vh - 3.25rem - 2px); // height of Navbar and b
     min-height: $screenHeightWithoutMenu;
     overflow: hidden;
   }
+  .radarContainer {
+    height: 200px;
+  }
   .neighbors {
     padding: 10px;
-      height: $screenHeightWithoutMenu;
+      height: calc($screenHeightWithoutMenu - 200px);
       overflow: scroll;
       overflow-y: scroll;
   }
