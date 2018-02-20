@@ -9,8 +9,8 @@
           </p>
         </figure>
         <div class="media-content">
-          <strong>{{entityState.iid}}</strong>
-          <h4 class="heading is-5">{{entityState.geo.lat}}, {{entityState.geo.lng}}</h4>
+          <strong>{{neighborState.iid}}</strong>
+          <h4 class="heading is-5">{{distance}}</h4>
         </div>
       </article>
     </div>
@@ -18,21 +18,27 @@
 </template>
 
 <script>
-import ExaQuarkJs from 'exaquark-js'
+import { mapGetters } from 'vuex'
+import { getDistanceBetweenEntities } from 'exaquark-js/lib/helpers.js'
 const DEFAULT_AVATAR = process.env.AVATARS.NEIGHBORS // /config/prod.env.js
 export default {
   name: 'NeighborListItem',
   props: {
-    entityState: {
+    neighborState: {
       type: Object,
       required: true
     }
   },
   computed: {
+    ...mapGetters([
+      'entityState'
+    ]),
     avatarUrl: function () {
-      console.log('ExaQuarkJs', ExaQuarkJs.getNeighborsByMaxDistance)
-      let url = (this.entityState.customState && this.entityState.customState.avatarUrl) ? this.entityState.customState.avatarUrl : DEFAULT_AVATAR
+      let url = (this.neighborState.customState && this.neighborState.customState.avatarUrl) ? this.neighborState.customState.avatarUrl : DEFAULT_AVATAR
       return url
+    },
+    distance: function () {
+      return getDistanceBetweenEntities(this.entityState, this.neighborState) * 1000
     }
   }
 }

@@ -14,7 +14,7 @@
     <div class="column is-3 sidebar">
       <div class="neighbors">
         <h6 class="heading">Neighbors</h6>
-        <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :entityState="neighbor" />
+        <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :neighborState="neighbor" />
       </div>
     </div>
 
