@@ -3,15 +3,14 @@
 </template>
 
 <script>
-var THREE = require('three')
+const THREE = require('three')
+const PointerLockControls = require('three-pointerlock')
 var camera
 var scene
 var renderer
-// var controls
-// var controlsEnabled
+var controls
 var objects = []
-// // var raycaster
-// var instructions = document.getElementById('instructions')
+var raycaster
 
 export default {
   name: 'Canvas',
@@ -19,19 +18,45 @@ export default {
   },
   mounted: function () {
     this.initializeCanvas()
+    this.addFloor()
     this.addObjects()
-    // var geometry = new THREE.BoxGeometry(1, 1, 1)
-    // var material = new THREE.MeshBasicMaterial({
-    //   color: 0x00ff00
-    // })
-    // var cube = new THREE.Mesh(geometry, material)
-    // scene.add(cube)
-    //
-    // camera.position.z = 5
-    //
+    this.addControls()
+
+    let self = this
     var animate = function () {
       requestAnimationFrame(animate)
+      if (self.controlsEnabled === true) {
+        raycaster.ray.origin.copy(controls.getObject().position)
+        raycaster.ray.origin.y -= 10
+        let intersections = raycaster.intersectObjects(objects)
+        let onObject = intersections.length > 0
+        let time = performance.now()
+        let delta = (time - self.prevTime) / 1000
 
+        self.velocity.x -= self.velocity.x * 10.0 * delta
+        self.velocity.z -= self.velocity.z * 10.0 * delta
+        self.velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
+
+        self.direction.z = Number(self.moveForward) - Number(self.moveBackward)
+        self.direction.x = Number(self.moveLeft) - Number(self.moveRight)
+        self.direction.normalize() // this ensures consistent movements in all directions
+
+        if (self.moveForward || self.moveBackward) self.velocity.z -= self.direction.z * 400.0 * delta
+        if (self.moveLeft || self.moveRight) self.velocity.x -= self.direction.x * 400.0 * delta
+        if (onObject === true) {
+          self.velocity.y = Math.max(0, self.velocity.y)
+          self.canJump = true
+        }
+        controls.getObject().translateX(self.velocity.x * delta)
+        controls.getObject().translateY(self.velocity.y * delta)
+        controls.getObject().translateZ(self.velocity.z * delta)
+        if (controls.getObject().position.y < 10) {
+          self.velocity.y = 0
+          controls.getObject().position.y = 10
+          self.canJump = true
+        }
+        self.prevTime = time
+      }
       renderer.render(scene, camera)
     }
 
@@ -39,7 +64,15 @@ export default {
   },
   data: () => {
     return {
-      scene
+      controlsEnabled: true,
+      moveForward: false,
+      moveLeft: false,
+      moveBackward: false,
+      moveRight: false,
+      canJump: true,
+      prevTime: performance.now(),
+      velocity: new THREE.Vector3(),
+      direction: new THREE.Vector3()
     }
   },
   computed: {
@@ -51,9 +84,10 @@ export default {
     initializeCanvas () {
       let ele = this.$refs.Canvas
       let width = ele.offsetWidth
-      let height = window.innerHeight - 50
+      let height = window.innerHeight - 60
       scene = new THREE.Scene()
-      camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000)
+      camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000)
+      raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
       renderer = new THREE.WebGLRenderer()
 
       // set a background
@@ -65,15 +99,30 @@ export default {
       light.position.set(0.5, 1, 0.75)
       scene.add(light)
 
-      // add a floor
-      let floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100)
-      floorGeometry.rotateX(-Math.PI / 2)
-      let floorMaterial = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors })
-      let floor = new THREE.Mesh(floorGeometry, floorMaterial)
-      scene.add(floor)
-
+      renderer.setPixelRatio(window.devicePixelRatio)
       renderer.setSize(width, height)
       ele.appendChild(renderer.domElement)
+    },
+    addFloor () {
+      var floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100)
+      floorGeometry.rotateX(-Math.PI / 2)
+      for (let i = 0, l = floorGeometry.vertices.length; i < l; i++) {
+        var vertex = floorGeometry.vertices[i]
+        vertex.x += Math.random() * 20 - 10
+        vertex.y += Math.random() * 2
+        vertex.z += Math.random() * 20 - 10
+      }
+      for (let i = 0, l = floorGeometry.faces.length; i < l; i++) {
+        var face = floorGeometry.faces[i]
+        face.vertexColors[0] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+        face.vertexColors[1] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+        face.vertexColors[2] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+      }
+      var floorMaterial = new THREE.MeshBasicMaterial({
+        vertexColors: THREE.VertexColors
+      })
+      var floor = new THREE.Mesh(floorGeometry, floorMaterial)
+      scene.add(floor)
     },
     addObjects () {
       var boxGeometry = new THREE.BoxGeometry(20, 20, 20)
@@ -97,80 +146,57 @@ export default {
         scene.add(box)
         objects.push(box)
       }
+    },
+    addControls () {
+      controls = new PointerLockControls(camera)
+      scene.add(controls.getObject())
+      var onKeyDown = event => {
+        switch (event.keyCode) {
+          case 38: // up
+          case 87: // w
+            this.moveForward = true
+            break
+          case 37: // left
+          case 65: // a
+            this.moveLeft = true
+            break
+          case 40: // down
+          case 83: // s
+            this.moveBackward = true
+            break
+          case 39: // right
+          case 68: // d
+            this.moveRight = true
+            break
+          case 32: // space
+            if (this.canJump === true) this.velocity.y += 350
+            this.canJump = false
+            break
+        }
+      }
+      var onKeyUp = event => {
+        switch (event.keyCode) {
+          case 38: // up
+          case 87: // w
+            this.moveForward = false
+            break
+          case 37: // left
+          case 65: // a
+            this.moveLeft = false
+            break
+          case 40: // down
+          case 83: // s
+            this.moveBackward = false
+            break
+          case 39: // right
+          case 68: // d
+            this.moveRight = false
+            break
+        }
+      }
+      document.addEventListener('keydown', onKeyDown, false)
+      document.addEventListener('keyup', onKeyUp, false)
     }
-    // init: function () {
-    //   // controls = new THREE.PointerLockControls(camera)
-    //   // scene.add(controls.getObject())
-    //   // raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
-    //   // let floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100)
-    //   renderer.setPixelRatio(window.devicePixelRatio)
-    //   renderer.setSize(window.innerWidth, window.innerHeight)
-    //   document.body.appendChild(renderer.domElement)
-    // },
-    // animate: function () {
-    //   requestAnimationFrame(this.animate)
-    //   if (controlsEnabled === true) {
-    //     // raycaster.ray.origin.copy(controls.getObject().position)
-    //     // raycaster.ray.origin.y -= 10
-    //     // var intersections = raycaster.intersectObjects(objects)
-    //     // var onObject = intersections.length > 0
-    //     // var time = performance.now()
-    //     // var delta = ( time - prevTime ) / 1000
-    //     // velocity.x -= velocity.x * 10.0 * delta
-    //     // velocity.z -= velocity.z * 10.0 * delta
-    //     // velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
-    //     // direction.z = Number( moveForward) - Number(moveBackward)
-    //     // direction.x = Number( moveLeft ) - Number( moveRight )
-    //     // direction.normalize() // this ensures consistent movements in all directions
-    //     // if ( moveForward || moveBackward ) velocity.z -= direction.z * 400.0 * delta
-    //     // if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta
-    //     // if ( onObject === true ) {
-    //     // velocity.y = Math.max( 0, velocity.y )
-    //     // canJump = true
-    //     // }
-    //     // controls.getObject().translateX( velocity.x * delta )
-    //     // controls.getObject().translateY( velocity.y * delta )
-    //     // controls.getObject().translateZ( velocity.z * delta )
-    //     // if (controls.getObject().position.y < 10) {
-    //     //   velocity.y = 0
-    //     //   controls.getObject().position.y = 10
-    //     //   canJump = true
-    //     // }
-    //     // prevTime = time
-    //   }
-    //   renderer.render(scene, camera)
-    // },
-    // setUpPointerLock () {
-    //   var element = document.body
-    //   var pointerlockchange = function (event) {
-    //     if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-    //       controlsEnabled = true
-    //       controls.enabled = true
-    //       this.showBlocker = false
-    //     } else {
-    //       controls.enabled = false
-    //       this.showBlocker = true
-    //       instructions.style.display = ''
-    //     }
-    //   }
-    //   var pointerlockerror = function (event) {
-    //     instructions.style.display = ''
-    //   }
-    //   // Hook pointer lock state change events
-    //   document.addEventListener('pointerlockchange', pointerlockchange, false)
-    //   document.addEventListener('mozpointerlockchange', pointerlockchange, false)
-    //   document.addEventListener('webkitpointerlockchange', pointerlockchange, false)
-    //   document.addEventListener('pointerlockerror', pointerlockerror, false)
-    //   document.addEventListener('mozpointerlockerror', pointerlockerror, false)
-    //   document.addEventListener('webkitpointerlockerror', pointerlockerror, false)
-    //   instructions.addEventListener('click', function (event) {
-    //     instructions.style.display = 'none'
-    //     // Ask the browser to lock the pointer
-    //     element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock
-    //     element.requestPointerLock()
-    //   }, false)
-    // }
-
   }
 }
 </script>

@@ -143,9 +143,13 @@ $screenHeightWithoutMenu: calc(100vh - 3.25rem - 2px); // height of Navbar and b
   }
   .neighbors {
     padding: 10px;
-      height: calc($screenHeightWithoutMenu - 200px);
-      overflow: scroll;
-      overflow-y: scroll;
+    height: calc($screenHeightWithoutMenu - 200px);
+    overflow: scroll;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      width: 0px;  /* remove scrollbar space */
+      background: transparent;  /* optional: just make scrollbar invisible */
+    }
   }
 }
 </style>
