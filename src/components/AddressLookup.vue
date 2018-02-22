@@ -1,6 +1,6 @@
 <template>
   <div class="AddressLookup">
-    <gmap-autocomplete @place_changed="emitPlace" class="input" placeholder="Go to address" > </gmap-autocomplete>
+    <gmap-autocomplete @place_changed="emitPlace" class="input is-expanded" placeholder="Go to address" > </gmap-autocomplete>
   </div>
 </template>
 

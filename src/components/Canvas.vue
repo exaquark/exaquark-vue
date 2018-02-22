@@ -17,10 +17,12 @@ export default {
   props: {
   },
   mounted: function () {
-    this.initializeCanvas()
+    let ele = this.$refs.Canvas
+    this.initializeCanvas(ele)
     this.addFloor()
     this.addObjects()
     this.addControls()
+    this.setUpPointerLock(ele)
 
     let self = this
     var animate = function () {
@@ -72,7 +74,8 @@ export default {
       canJump: true,
       prevTime: performance.now(),
       velocity: new THREE.Vector3(),
-      direction: new THREE.Vector3()
+      direction: new THREE.Vector3(),
+      hasPointerLock: false
     }
   },
   computed: {
@@ -81,10 +84,9 @@ export default {
     }
   },
   methods: {
-    initializeCanvas () {
-      let ele = this.$refs.Canvas
+    initializeCanvas (ele) {
       let width = ele.offsetWidth
-      let height = window.innerHeight - 60
+      let height = window.innerHeight - 52
       scene = new THREE.Scene()
       camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000)
       raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
@@ -132,7 +134,7 @@ export default {
         face.vertexColors[1] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
         face.vertexColors[2] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
       }
-      for (let i = 0; i < 500; i++) {
+      for (let i = 0; i < 20; i++) {
         var boxMaterial = new THREE.MeshPhongMaterial({
           specular: 0xffffff,
           flatShading: true,
@@ -196,12 +198,54 @@ export default {
       }
       document.addEventListener('keydown', onKeyDown, false)
       document.addEventListener('keyup', onKeyUp, false)
+    },
+    setUpPointerLock (clickListener) {
+      let havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document
+      if (havePointerLock) {
+        var element = document.body
+        let self = this
+        let pointerlockchange = event => {
+          if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
+            self.controlsEnabled = true
+            controls.enabled = true
+            self.hasPointerLock = true
+          } else {
+            controls.enabled = false
+            self.hasPointerLock = false
+          }
+        }
+        let pointerlockerror = event => {
+          console.error(event)
+        }
+        // Hook pointer lock state change events
+        document.addEventListener('pointerlockchange', pointerlockchange, false)
+        document.addEventListener('mozpointerlockchange', pointerlockchange, false)
+        document.addEventListener('webkitpointerlockchange', pointerlockchange, false)
+        document.addEventListener('pointerlockerror', pointerlockerror, false)
+        document.addEventListener('mozpointerlockerror', pointerlockerror, false)
+        document.addEventListener('webkitpointerlockerror', pointerlockerror, false)
+        clickListener.addEventListener('click', event => {
+          // Ask the browser to lock the pointer
+          element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock
+          element.requestPointerLock()
+        }, false)
+      } else {
+        console.log('Your browser doesn\'t seem to support Pointer Lock API')
+      }
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+$screenHeightWithoutMenu: calc(100vh - 3.25rem - 2px); // height of Navbar and border
 .Canvas {
+  max-height: $screenHeightWithoutMenu;
+  overflow: hidden;
+  overflow-y: hidden;
+  &::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+  }
 }
 </style>

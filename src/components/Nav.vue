@@ -3,55 +3,56 @@
 
     <nav class="navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <a class="navbar-item" href="/">
+        <a class="navbar-item is-hidden-mobile" href="/">
           <img src="../assets/logo-menu.svg" alt="exaQuark" width="112" >
         </a>
+        <a class="navbar-item">
+          <span class="icon is-small">
+            <i class="fas fa-microphone-slash"></i>
+          </span>
+        </a>
+        <a class="navbar-item">
+          <span class="icon is-small">
+            <i class="fas fa-volume-off"></i>
+          </span>
+        </a>
+        <a class="navbar-item" @click="toggleLocationModal()">
+          <span class="icon is-small">
+            <i class="far fa-map"></i>
+          </span>
+        </a>
+        <a class="navbar-item" @click="toggleSettingsModal()">
+          <span class="icon is-small">
+            <i class="fas fa-cog"></i>
+          </span>
+        </a>
 
-        <button class="navbar-burger" @click="toggleMobileMenu()">
+        <div class="navbar-burger" @click="toggleMobileMenu()">
           <span></span>
           <span></span>
           <span></span>
-        </button>
+        </div>
       </div>
       <div class="navbar-menu" v-bind:class="{ 'is-active': showMobileMenu }">
         <div class="navbar-end">
-          <a class="navbar-item" @click="toggleLocationModal()">
-            <span class="icon is-small is-hidden-mobile">
-              <i class="far fa-map"></i>
-            </span>
-            <span class=" is-hidden-tablet">Teleport</span>
-          </a>
-          <a class="navbar-item" @click="toggleSettingsModal()">
-            <span class="icon is-small is-hidden-mobile">
-              <i class="fas fa-cog"></i>
-            </span>
-            <span class=" is-hidden-tablet">Settings</span>
-          </a>
+
         </div>
       </div>
     </nav>
-    <div class="modal" v-bind:class="{ 'is-active': showLocationModal }">
-      <div class="modal-background"></div>
-      <div class="modal-content">
-        <div class="box">
-          Navigation
-          <AddressLookup @onChange="setAddressGeo" />
-        </div>
-      </div>
-      <button class="modal-close is-large" aria-label="close" @click="toggleLocationModal()"></button>
-    </div>
 
     <Settings />
+    <LocationModal />
   </div>
 </template>
 
 <script>
-import AddressLookup from '@/components/AddressLookup.vue'
 import Settings from '@/components/Settings.vue'
+import LocationModal from '@/components/LocationModal.vue'
 export default {
   name: 'Nav',
   components: {
-    AddressLookup,
+    // AddressLookup,
+    LocationModal,
     Settings
   },
   data: function () {
@@ -65,14 +66,10 @@ export default {
       this.showMobileMenu = !this.showMobileMenu
     },
     toggleLocationModal: function () {
-      this.showLocationModal = !this.showLocationModal
+      this.$store.commit('TOGGLE_LOCATION_MODAL')
     },
     toggleSettingsModal: function () {
       this.$store.commit('TOGGLE_SETTINGS_MODAL')
-    },
-    setAddressGeo: function (payload) {
-      this.$store.commit('SET_ADDRESS_GEO', payload)
-      this.toggleLocationModal()
     }
   }
 }
