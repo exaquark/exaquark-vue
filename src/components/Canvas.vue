@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 const THREE = require('three')
 const PointerLockControls = require('three-pointerlock')
 var camera
@@ -11,6 +12,9 @@ var renderer
 var controls
 var objects = []
 var raycaster
+
+const SAVE_FREQUENCY = 250 // every 5 seconds?
+var savedCallCounter = SAVE_FREQUENCY
 
 export default {
   name: 'Canvas',
@@ -58,6 +62,7 @@ export default {
           self.canJump = true
         }
         self.prevTime = time
+        self.saveStateToLocalStorage()
       }
       renderer.render(scene, camera)
     }
@@ -79,6 +84,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'entityState'
+    ]),
     havePointerLock: function () {
       return 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document
     }
@@ -231,6 +239,13 @@ export default {
         }, false)
       } else {
         console.log('Your browser doesn\'t seem to support Pointer Lock API')
+      }
+    },
+    saveStateToLocalStorage: function () {
+      savedCallCounter--
+      if (savedCallCounter <= 1) {
+        savedCallCounter = SAVE_FREQUENCY
+        if (localStorage) localStorage.setItem('chatmapEntityState', JSON.stringify(this.entityState))
       }
     }
   }

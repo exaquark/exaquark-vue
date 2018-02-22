@@ -9,8 +9,8 @@ const state = {
     entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
     universe: 'MOCK_UNIVERSE_ID', // {string} required:  which universe is the entitiy in
     geo: {
-      lat: 1.2883, // {double} required: latitude
-      lng: 103.8475, // {double} required: longitude
+      lat: Math.random() * 180 - 90, // {double} required: latitude
+      lng: Math.random() * 360 - 180, // {double} required: longitude
       altitude: 0, // {double} optional: altitude in meters - can be negative
       rotation: [ 2, 5, 19 ] // {Array of doubles} optional: all in degrees. Default facing north
     },
@@ -55,6 +55,9 @@ const mutations = {
   },
   SET_DISPLAY_NAME (state, payload) {
     state.entityState.properties.displayName = payload
+  },
+  SET_ENTITY_STATE (state, payload) {
+    state.entityState = payload
   },
   SET_IID (state, payload) {
     state.iid = payload

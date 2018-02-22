@@ -21,5 +21,12 @@ new Vue({
   router,
   store,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  created () {
+    let previousState = localStorage.getItem('chatmapEntityState')
+    let entityState = JSON.parse(previousState)
+    if (entityState && entityState.geo && entityState.geo.lat && entityState.geo.lng) {
+      store.commit('SET_ENTITY_STATE', entityState)
+    }
+  }
 })
