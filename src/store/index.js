@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+const THREE = require('three')
 
 Vue.use(Vuex)
 
@@ -46,6 +47,7 @@ const state = {
     modalVisible: true
   },
   neighbors: [],
+  scene: new THREE.Scene(),
   settings: {
     customAvatar: '',
     modalVisible: false
@@ -90,6 +92,7 @@ const getters = {
   locations: state => state.locations,
   locationModalVisible: state => state.locations.modalVisible,
   neighbors: state => state.neighbors,
+  scene: state => state.scene,
   settings: state => state.settings,
   settingsModalVisible: state => state.settings.modalVisible
 }

@@ -31,15 +31,9 @@ import ExaQuarkJs from 'exaquark-js/core'
 import Canvas from '@/components/Canvas.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
+import World from '@/utils/World'
+var world = World.getInstance()
 var exaQuark = null
-// const MOVE_DISTANCE = 0.5
-// const ANGLES = {
-//   right: 0,
-//   up: 90,
-//   left: 180,
-//   down: 270,
-//   upRight: 45
-// }
 
 var Home = {
   name: 'Home',
@@ -61,14 +55,14 @@ var Home = {
 
     exaQuark = new ExaQuarkJs(exaQuarkUrl, apiKey, options)
     exaQuark.on('neighbor:enter', entityState => {
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
+      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:leave', entityState => {
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
+      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:updates', entityState => {
       // if (entityState.properties.displayName) console.log('entityState.properties.displayName', entityState.properties.displayName)
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors('Array'))
+      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {
@@ -78,6 +72,10 @@ var Home = {
     exaQuark.bind(this.getState)
 
     // this.startEventLoop()
+  },
+  mounted: function () {
+    this.addControls()
+    world.setOriginLatLng(this.entityState.geo.lat, this.entityState.geo.lng)
   },
   computed: {
     ...mapGetters([
@@ -94,6 +92,57 @@ var Home = {
     getState: function () {
       if (this.entityState.properties.displayName) console.log('this.displayName', this.entityState.properties.displayName)
       return this.entityState
+    },
+    addControls () {
+      var onKeyDown = event => {
+        switch (event.keyCode) {
+          case 38: // up
+          case 87: // w
+            world.moveForward = true
+            break
+          case 37: // left
+          case 65: // a
+            world.moveLeft = true
+            break
+          case 40: // down
+          case 83: // s
+            world.moveBackward = true
+            break
+          case 39: // right
+          case 68: // d
+            world.moveRight = true
+            break
+          case 32: // space
+            if (world.canJump === true) world.velocity.y += 350
+            world.canJump = false
+            break
+        }
+      }
+      var onKeyUp = event => {
+        switch (event.keyCode) {
+          case 38: // up
+          case 87: // w
+            world.moveForward = false
+            break
+          case 37: // left
+          case 65: // a
+            world.moveLeft = false
+            break
+          case 40: // down
+          case 83: // s
+            world.moveBackward = false
+            break
+          case 39: // right
+          case 68: // d
+            world.moveRight = false
+            break
+        }
+      }
+      document.addEventListener('keydown', onKeyDown, false)
+      document.addEventListener('keyup', onKeyUp, false)
+    },
+    saveStateToLocalStorage: function () {
+      if (localStorage) localStorage.setItem('chatmapEntityState', JSON.stringify(this.entityState))
     }
   }
 }
