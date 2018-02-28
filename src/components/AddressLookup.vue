@@ -14,10 +14,17 @@ export default {
   },
   methods: {
     emitPlace: function (place) {
-      this.$emit('onChange', {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-      })
+      if (place) {
+        let lat = place.geometry.location.lat()
+        let lng = place.geometry.location.lng()
+        if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+          console.log('emitting', place.geometry.location)
+          this.$emit('onChange', {
+            lat: lat,
+            lng: lng
+          })
+        }
+      }
     }
   }
 }

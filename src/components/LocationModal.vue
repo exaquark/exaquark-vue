@@ -78,9 +78,11 @@ export default {
       this.setPosition(place)
     },
     setPosition: function (place) {
+      console.log('place', place)
       this.$store.commit('SET_POSITION', {
         lat: place.lat,
-        lng: place.lng
+        lng: place.lng,
+        altitude: 0
       })
       this.toggleLocationModal()
     }

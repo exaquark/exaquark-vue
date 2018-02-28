@@ -28,22 +28,18 @@
 <script>
 import { mapGetters } from 'vuex'
 import ExaQuarkJs from 'exaquark-js/core'
-import key from 'keymaster'
-
-import { getFinalLatLon } from '@/utils/geometry'
 import Canvas from '@/components/Canvas.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 var exaQuark = null
-
-const MOVE_DISTANCE = 0.5
-const ANGLES = {
-  right: 0,
-  up: 90,
-  left: 180,
-  down: 270,
-  upRight: 45
-}
+// const MOVE_DISTANCE = 0.5
+// const ANGLES = {
+//   right: 0,
+//   up: 90,
+//   left: 180,
+//   down: 270,
+//   upRight: 45
+// }
 
 var Home = {
   name: 'Home',
@@ -81,7 +77,7 @@ var Home = {
     }).catch('err', err => { console.error(err) })
     exaQuark.bind(this.getState)
 
-    this.startEventLoop()
+    // this.startEventLoop()
   },
   computed: {
     ...mapGetters([
@@ -98,32 +94,6 @@ var Home = {
     getState: function () {
       if (this.entityState.properties.displayName) console.log('this.displayName', this.entityState.properties.displayName)
       return this.entityState
-    },
-    startEventLoop: function () {
-      setInterval(() => {
-        if (key.isPressed('up') || key.isPressed('w')) {
-          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.up)
-          this.move(latLng[0], latLng[1])
-        }
-        if (key.isPressed('down') || key.isPressed('s')) {
-          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.down)
-          this.move(latLng[0], latLng[1])
-        }
-        if (key.isPressed('left') || key.isPressed('a')) {
-          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.left)
-          this.move(latLng[0], latLng[1])
-        }
-        if (key.isPressed('right') || key.isPressed('d')) {
-          let latLng = getFinalLatLon(this.entityState.geo.lat, this.entityState.geo.lng, MOVE_DISTANCE, ANGLES.right)
-          this.move(latLng[0], latLng[1])
-        }
-      }, 50)
-    },
-    move: function (lat, lng) {
-      this.$store.commit('SET_POSITION', {
-        lat: lat,
-        lng: lng
-      })
     }
   }
 }

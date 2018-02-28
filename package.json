@@ -15,9 +15,8 @@
   },
   "dependencies": {
     "bulma": "^0.6.2",
-    "exaquark-js": "^1.0.14",
+    "exaquark-js": "^1.0.15",
     "jsonp": "^0.2.1",
-    "keymaster": "^1.6.2",
     "three": "^0.90.0",
     "three-pointerlock": "0.0.2",
     "vue": "^2.5.2",

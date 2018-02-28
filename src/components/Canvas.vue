@@ -16,6 +16,17 @@ var raycaster
 const SAVE_FREQUENCY = 250 // every 5 seconds?
 var savedCallCounter = SAVE_FREQUENCY
 
+const EARTH_RADIUS = 6378137 // in meters
+const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
+
+// neighbors
+var neighborGeometry = new THREE.SphereGeometry(5, 32, 32)
+var neighborMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
+var neighbor = new THREE.Mesh(neighborGeometry, neighborMaterial)
+neighbor.position.x = Math.floor(Math.random() * 20 - 10) * 20
+neighbor.position.y = 10
+neighbor.position.z = Math.floor(Math.random() * 20 - 10) * 20
+
 export default {
   name: 'Canvas',
   props: {
@@ -24,15 +35,20 @@ export default {
     let ele = this.$refs.Canvas
     this.initializeCanvas(ele)
     this.addFloor()
-    this.addObjects()
+    // this.addObjects()
+
     this.addControls()
     this.setUpPointerLock(ele)
+
+    scene.add(neighbor)
+    objects.push(neighbor)
 
     let self = this
     var animate = function () {
       requestAnimationFrame(animate)
       if (self.controlsEnabled === true) {
         raycaster.ray.origin.copy(controls.getObject().position)
+        // console.log('controls.getObject().position', controls.getObject().position)
         raycaster.ray.origin.y -= 10
         let intersections = raycaster.intersectObjects(objects)
         let onObject = intersections.length > 0
@@ -62,7 +78,20 @@ export default {
           self.canJump = true
         }
         self.prevTime = time
+
+        let pos = controls.getObject().position
+        self.move(pos.x, pos.y, pos.z)
         self.saveStateToLocalStorage()
+        // console.log('this.ent', self.neighbors[0])
+
+        let firstNeighbor = self.neighbors[0]
+        if (firstNeighbor) {
+          let nPos = firstNeighbor.geo
+          let xyz = self.latLngToVector(nPos.lat, nPos.lng)
+          neighbor.position.x = xyz[0]
+          neighbor.position.y = 10
+          neighbor.position.z = xyz[2]
+        }
       }
       renderer.render(scene, camera)
     }
@@ -80,12 +109,15 @@ export default {
       prevTime: performance.now(),
       velocity: new THREE.Vector3(),
       direction: new THREE.Vector3(),
-      hasPointerLock: false
+      hasPointerLock: false,
+      originLat: 0,
+      originLng: 0
     }
   },
   computed: {
     ...mapGetters([
-      'entityState'
+      'entityState',
+      'neighbors'
     ]),
     havePointerLock: function () {
       return 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document
@@ -159,6 +191,14 @@ export default {
     },
     addControls () {
       controls = new PointerLockControls(camera)
+      this.setOriginLatLng(this.entityState.geo.lat, this.entityState.geo.lng)
+      // let pos = {
+      //   x: this.entityState.geo.lat,
+      //   y: this.entityState.geo.altitude,
+      //   z: this.entityState.geo.lng
+      // }
+      // controls.getObject().position.set(pos.x, pos.y, pos.z)
+      // console.log('controls.getObject().position', controls.getObject().position)
       scene.add(controls.getObject())
       var onKeyDown = event => {
         switch (event.keyCode) {
@@ -247,6 +287,30 @@ export default {
         savedCallCounter = SAVE_FREQUENCY
         if (localStorage) localStorage.setItem('chatmapEntityState', JSON.stringify(this.entityState))
       }
+    },
+    move: function (x, y, z) {
+      let latLng = this.positionToLatLng(x, z)
+      this.$store.commit('SET_POSITION', {
+        lat: latLng.lat,
+        lng: latLng.lng,
+        altitude: y
+      })
+    },
+    setOriginLatLng: function (lat, lng) {
+      this.originLat = lat
+      this.lngFactor = LAT_FACTOR / Math.cos(this.originLat * Math.PI / 180)
+      this.originLng = lng
+    },
+    positionToLatLng (x, z) {
+      return {
+        lat: (this.originLat + z * LAT_FACTOR),
+        lng: (this.originLng + this.lngFactor * x + 180) % 360 - 180
+      }
+    },
+    latLngToVector (lat, lng, altitude = 0) {
+      let x = (lng - this.originLng) / this.lngFactor
+      let z = (lat - this.originLat) / LAT_FACTOR
+      return [x, altitude, z]
     }
   }
 }

@@ -25,7 +25,8 @@ new Vue({
   created () {
     let previousState = localStorage.getItem('chatmapEntityState')
     let entityState = JSON.parse(previousState)
-    if (entityState && entityState.geo && entityState.geo.lat && entityState.geo.lng) {
+    if (entityState && entityState.geo && entityState.geo.lat && entityState.geo.lng && !isNaN(entityState.geo.lat) && !isNaN(entityState.geo.lng)) {
+      console.log('commiting previous state', entityState)
       store.commit('SET_ENTITY_STATE', entityState)
     }
   }

@@ -3,14 +3,17 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+let randomLat = Math.random() * 180 - 90
+let randomLng = Math.random() * 360 - 180
+
 const state = {
   iid: '',
   entityState: {
     entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
     universe: 'MOCK_UNIVERSE_ID', // {string} required:  which universe is the entitiy in
     geo: {
-      lat: Math.random() * 180 - 90, // {double} required: latitude
-      lng: Math.random() * 360 - 180, // {double} required: longitude
+      lat: randomLat, // {double} required: latitude
+      lng: randomLng, // {double} required: longitude
       altitude: 0, // {double} optional: altitude in meters - can be negative
       rotation: [ 2, 5, 19 ] // {Array of doubles} optional: all in degrees. Default facing north
     },
@@ -68,6 +71,7 @@ const mutations = {
   SET_POSITION (state, payload) {
     state.entityState.geo.lat = payload.lat
     state.entityState.geo.lng = payload.lng
+    state.entityState.geo.altitude = payload.altitude
   },
   TOGGLE_LOCATION_MODAL (state) {
     state.locations.modalVisible = !state.locations.modalVisible
