@@ -1,6 +1,7 @@
 // SingletonInstance
 // var justOneInstance = World.getInstance()
 
+import NeighborsSet from './neighborsSet'
 const THREE = require('three')
 const PointerLockControls = require('three-pointerlock')
 
@@ -21,6 +22,7 @@ var World = (function () {
     this.direction = new THREE.Vector3()
     this.hasPointerLock = false
     this.originLat = null
+    this.neighborsSet = NeighborsSet
 
     this.resize = function (pixelRatio, width, height) {
       this.camera.aspect = window.innerWidth / window.innerHeight
@@ -53,6 +55,17 @@ var World = (function () {
         lng: latLng.lng,
         altitude: pos.y
       }
+    }
+    this.insertOrUpdateNeighbor = function (iid, state) {
+      let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state)
+      this.scene.add(n.avatar)
+      this.objects.push(n.avatar)
+    }
+    this.removeNeighbor = function (iid) {
+      let n = this.neighborsSet.removeNeighbor(iid)
+      console.log('n', iid)
+      this.scene.remove(n.avatar)
+      console.log('this.objects', this.objects)
     }
 
     let self = this
@@ -89,6 +102,18 @@ var World = (function () {
           self.canJump = true
         }
         self.prevTime = time
+
+        // update neighbor positions
+        self.neighborsSet.doForEach(n => {
+          let nGeo = n.getGeo()
+          if (nGeo.lat && nGeo.lng) {
+            let nPos = self.latLngToVector(nGeo.lat, nGeo.lng, nGeo.altitude)
+            n.updatePosition(nPos[0], nPos[1], nPos[2])
+          }
+
+          // console.log('geo', nGeo)
+          // n.updatePosition()
+        })
       }
       self.renderer.render(self.scene, self.camera)
     }

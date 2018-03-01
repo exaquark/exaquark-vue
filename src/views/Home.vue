@@ -55,13 +55,15 @@ var Home = {
 
     exaQuark = new ExaQuarkJs(exaQuarkUrl, apiKey, options)
     exaQuark.on('neighbor:enter', entityState => {
+      world.insertOrUpdateNeighbor(entityState.iid, entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
-    exaQuark.on('neighbor:leave', entityState => {
+    exaQuark.on('neighbor:leave', iid => {
+      world.removeNeighbor(iid)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:updates', entityState => {
-      // if (entityState.properties.displayName) console.log('entityState.properties.displayName', entityState.properties.displayName)
+      world.insertOrUpdateNeighbor(entityState.iid, entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
 
