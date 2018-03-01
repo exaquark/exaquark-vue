@@ -31,7 +31,7 @@ import ExaQuarkJs from 'exaquark-js/core'
 import Canvas from '@/components/Canvas.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
-import World from '@/utils/World'
+import World from '@/utils/world'
 var world = World.getInstance()
 var exaQuark = null
 

@@ -4,7 +4,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import World from '@/utils/World'
+import World from '@/utils/world'
 var world = World.getInstance()
 
 export default {
