@@ -1,8 +1,23 @@
 const THREE = require('three')
 
 // neighbors
-var avatarGeometry = new THREE.SphereGeometry(5, 32, 32)
-var avatarMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
+// var avatarGeometry = new THREE.SphereGeometry(5, 32, 32)
+// var avatarMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
+
+var avatarGeometry = new THREE.BoxGeometry(20, 20, 20)
+for (let i = 0, l = avatarGeometry.faces.length; i < l; i++) {
+  var face = avatarGeometry.faces[i]
+  face.vertexColors[0] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+  face.vertexColors[1] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+  face.vertexColors[2] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+}
+var avatarMaterial = new THREE.MeshPhongMaterial({
+  specular: 0xffffff,
+  flatShading: true,
+  vertexColors: THREE.VertexColors
+})
+avatarMaterial.color.setHSL(Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+// var box = new THREE.Mesh(avatarGeometry, avatarMaterial)
 
 var NeighborsSet = {
   set: {},
