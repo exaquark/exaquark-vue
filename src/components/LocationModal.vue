@@ -37,6 +37,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import AddressLookup from '@/components/AddressLookup.vue'
+import World from '@/utils/world'
+var world = World.getInstance()
 export default {
   name: 'Location',
   props: {
@@ -79,6 +81,7 @@ export default {
     },
     setPosition: function (place) {
       console.log('place', place)
+      world.setOriginLatLng(place.lat, place.lng)
       this.$store.commit('SET_POSITION', {
         lat: place.lat,
         lng: place.lng,
