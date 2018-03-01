@@ -70,12 +70,11 @@ var Home = {
       exaQuark.push('ask:neighbours')
     }).catch('err', err => { console.error(err) })
     exaQuark.bind(this.getState)
-
-    // this.startEventLoop()
   },
   mounted: function () {
     this.addControls()
     world.setOriginLatLng(this.entityState.geo.lat, this.entityState.geo.lng)
+    this.startEventLoop()
   },
   computed: {
     ...mapGetters([
@@ -92,6 +91,11 @@ var Home = {
     getState: function () {
       if (this.entityState.properties.displayName) console.log('this.displayName', this.entityState.properties.displayName)
       return this.entityState
+    },
+    startEventLoop: function () {
+      setInterval(() => {
+        this.$store.commit('SET_POSITION', world.getPositionAsGeo())
+      }, 50)
     },
     addControls () {
       var onKeyDown = event => {

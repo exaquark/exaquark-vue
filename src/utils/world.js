@@ -44,6 +44,16 @@ var World = (function () {
       let z = (lat - this.originLat) / LAT_FACTOR
       return [x, altitude, z]
     }
+    // converts the current vector position into Lat/Lng
+    this.getPositionAsGeo = function () {
+      let pos = this.controls.getObject().position
+      let latLng = this.positionToLatLng(pos.x, pos.z)
+      return {
+        lat: latLng.lat,
+        lng: latLng.lng,
+        altitude: pos.y
+      }
+    }
 
     let self = this
     this.animate = function () {
