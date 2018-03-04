@@ -67,6 +67,15 @@ var World = (function () {
       this.scene.remove(n.avatar)
       console.log('this.objects', this.objects)
     }
+    this.changeUniverse = function (universe) {
+      if (universe === 'SANDBOX_BLACK') {
+        this.scene.background = new THREE.Color(0x000000)
+        this.scene.fog = new THREE.Fog(0x000000, 0, 750)
+      } else {
+        this.scene.background = new THREE.Color(0xffffff)
+        this.scene.fog = new THREE.Fog(0xffffff, 0, 750)
+      }
+    }
 
     let self = this
     this.animate = function () {
@@ -160,7 +169,6 @@ var World = (function () {
         })
         var floor = new THREE.Mesh(floorGeometry, floorMaterial)
         instance.scene.add(floor)
-
         // add controls
         instance.controls = new PointerLockControls(instance.camera)
         instance.scene.add(instance.controls.getObject())

@@ -83,11 +83,17 @@ var Home = {
       'addressGeo',
       'customAvatar',
       'entityState',
-      'neighbors'
+      'neighbors',
+      'universe'
     ])
   },
   data: () => {
     return {}
+  },
+  watch: {
+    universe: function () {
+      world.changeUniverse(this.universe)
+    }
   },
   methods: {
     getState: function () {

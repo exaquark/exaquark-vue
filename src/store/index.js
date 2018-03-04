@@ -11,7 +11,7 @@ const state = {
   iid: '',
   entityState: {
     entityId: 'MOCK_ENTITY_ID', // {string} required: their entityId
-    universe: 'MOCK_UNIVERSE_ID', // {string} required:  which universe is the entitiy in
+    universe: 'SANDBOX_WHITE', // {string} required:  which universe is the entitiy in
     geo: {
       lat: randomLat, // {double} required: latitude
       lng: randomLng, // {double} required: longitude
@@ -44,7 +44,7 @@ const state = {
         lng: 103.8475
       }
     ],
-    modalVisible: true
+    modalVisible: false
   },
   neighbors: [],
   scene: new THREE.Scene(),
@@ -75,6 +75,9 @@ const mutations = {
     state.entityState.geo.lng = payload.lng
     state.entityState.geo.altitude = payload.altitude
   },
+  SET_UNIVERSE (state, payload) {
+    state.entityState.universe = payload
+  },
   TOGGLE_LOCATION_MODAL (state) {
     state.locations.modalVisible = !state.locations.modalVisible
   },
@@ -94,7 +97,8 @@ const getters = {
   neighbors: state => state.neighbors,
   scene: state => state.scene,
   settings: state => state.settings,
-  settingsModalVisible: state => state.settings.modalVisible
+  settingsModalVisible: state => state.settings.modalVisible,
+  universe: state => state.entityState.universe
 }
 export default new Vuex.Store({
   state: state,

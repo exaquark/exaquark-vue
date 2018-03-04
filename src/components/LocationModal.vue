@@ -4,16 +4,27 @@
   <div class="modal" v-bind:class="{ 'is-active': locationModalVisible }">
     <div class="modal-background"></div>
     <div class="modal-content">
-      <div class="box has-text-centered">
+      <div class="box">
 
-        <div class="">
+        <div class="heading-div has-text-centered">
           <h4 class="title is-4">Chatmap by exaQuark</h4>
           <h4 class="heading subtitle">We're building a digital clone of earth. This is v0.0.1</h4>
         </div>
 
+        <h5 class="title is-5">Universe</h5>
+        <div class="location-buttons columns has-text-centered">
+          <div class="column">
+            <a class="box" href="#" @click="changeUniverse('SANDBOX_WHITE')">Sandbox (white)</a>
+          </div>
+          <div class="column">
+            <a class="box" href="#" @click="changeUniverse('SANDBOX_BLACK')">Sandbox (black)</a>
+          </div>
+        </div>
+
+        <h5 class="title is-5">Location</h5>
         <div class="location-buttons columns has-text-centered">
           <div class="column" v-for="place in locations.places" :key="place.label">
-            <a class="box" href="#" @click="setPosition(place)">{{place.label}}</a>
+            <a class="box" href="#" @click="handleTeleport(place)">{{place.label}}</a>
           </div>
         </div>
 
@@ -79,6 +90,13 @@ export default {
       }
       this.setPosition(place)
     },
+    handleTeleport: function (position) {
+      let place = {
+        lat: position.lat + (Math.random() - 0.5) / 2000,
+        lng: position.lng + (Math.random() - 0.5) / 2000
+      }
+      this.setPosition(place)
+    },
     setPosition: function (place) {
       console.log('place', place)
       world.setOriginLatLng(place.lat, place.lng)
@@ -88,6 +106,10 @@ export default {
         altitude: 0
       })
       this.toggleLocationModal()
+    },
+    changeUniverse: function (universe) {
+      this.$store.commit('SET_UNIVERSE', universe)
+      this.toggleLocationModal()
     }
   }
 }
@@ -95,6 +117,9 @@ export default {
 
 <style scoped lang="scss">
 .Location {
+  .heading-div {
+    margin-bottom: 30px;
+  }
   .location-buttons {
     margin: 30px 0;
   }
