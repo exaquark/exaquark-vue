@@ -9,8 +9,22 @@
           </p>
         </figure>
         <div class="media-content">
-          <strong>{{neighborState.properties.displayName || neighborState.iid}}</strong>
-          <h4 class="heading is-5">{{distance}} km</h4>
+          <div class="content">
+            <strong>{{neighborState.properties.displayName || neighborState.iid}}</strong>
+            <h4 class="heading is-5">{{distance}} km</h4>
+          </div>
+          <div class="level ">
+            <div class="level-left">
+              <div class="level-item">
+                <span class="icon is-small" v-show="neighborState.properties.mic"><i class="fas fa-microphone"></i></span>
+                <span class="icon is-small" v-show="!neighborState.properties.mic"><i class="fas fa-microphone-slash"></i></span>
+              </div>
+              <div class="level-item">
+                <span class="icon is-small" v-show="neighborState.properties.sound"><i class="fas fa-volume-up"></i></span>
+                <span class="icon is-small" v-show="!neighborState.properties.sound"><i class="fas fa-volume-off"></i></span>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
     </div>

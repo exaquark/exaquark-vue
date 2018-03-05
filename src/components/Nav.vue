@@ -6,23 +6,22 @@
         <a class="navbar-item is-hidden-mobile" href="/">
           <img src="../assets/logo-menu.svg" alt="exaQuark" width="112" >
         </a>
-        <a class="navbar-item">
-          <span class="icon is-small">
-            <i class="fas fa-microphone-slash"></i>
-          </span>
+        <a class="navbar-item" @click="$emit('onMicClicked')">
+          <span class="icon is-small" v-bind:class="{ 'has-text-info': mic }"><i class="fas fa-microphone"></i></span>
         </a>
-        <a class="navbar-item">
-          <span class="icon is-small">
-            <i class="fas fa-volume-off"></i>
-          </span>
+        <a class="navbar-item" @click="$emit('onAudioClicked')">
+          <span class="icon is-small" v-bind:class="{ 'has-text-info': sound }"><i class="fas fa-volume-up"></i></span>
+        </a>
+        <a class="navbar-item" @click="$emit('onVideoClicked')">
+          <span class="icon is-small" v-bind:class="{ 'has-text-info': video }"><i class="fas fa-video"></i></span>
         </a>
         <a class="navbar-item" @click="toggleLocationModal()">
-          <span class="icon is-small">
+          <span class="icon is-small has-text-info">
             <i class="far fa-map"></i>
           </span>
         </a>
         <a class="navbar-item" @click="toggleSettingsModal()">
-          <span class="icon is-small">
+          <span class="icon is-small has-text-info">
             <i class="fas fa-cog"></i>
           </span>
         </a>
@@ -46,6 +45,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Settings from '@/components/Settings.vue'
 import LocationModal from '@/components/LocationModal.vue'
 export default {
@@ -60,6 +60,13 @@ export default {
       showMobileMenu: false,
       showLocationModal: false
     }
+  },
+  computed: {
+    ...mapGetters([
+      'mic',
+      'sound',
+      'video'
+    ])
   },
   methods: {
     toggleMobileMenu: function () {
@@ -78,6 +85,10 @@ export default {
 .Nav {
   .navbar {
     border-bottom: 1px solid #ededed;
+  }
+  .off {
+    color: red;
+    fill:red;
   }
 }
 </style>

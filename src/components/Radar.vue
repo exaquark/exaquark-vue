@@ -157,6 +157,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'entityState',
       'customAvatar'
     ]),
     geo: function () {
@@ -166,6 +167,8 @@ export default {
       }
     },
     defaultIconOptions: function () {
+      console.log('this.entityState', this.entityState)
+      console.log('this.customAvatar', this.customAvatar)
       let avatarUrl = this.customAvatar || DEFAULT_AVATAR
       // let avatarUrl = this.customAvatar || DEFAULT_AVATAR
       return {

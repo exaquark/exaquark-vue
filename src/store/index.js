@@ -22,6 +22,7 @@ const state = {
       displayName: '', // {string} required: a human readable name to be displayed
       sound: false, // {boolean} optional: defaults to true. false === mute
       mic: false, // {boolean} optional: defaults to true. false === muted microphone
+      video: false, // {boolean} optional: defaults to true. false === muted microphone
       virtualPosition: true, // {boolean} optional: defaults to false. Is this person physically in the position that they are in the digital universe. (true === they are not physically present there)
       entityType: 'HUMAN' // {string} optional: defaults to 'human'. Options: 'HUMAN' | 'BOT' | 'DRONE'
     },
@@ -49,11 +50,15 @@ const state = {
   neighbors: [],
   scene: new THREE.Scene(),
   settings: {
-    customAvatar: '',
     modalVisible: false
   }
 }
 const mutations = {
+  RESET_DEFAULTS (state) { // resets key fields
+    state.entityState.properties.sound = false
+    state.entityState.properties.mic = false
+    state.entityState.properties.video = false
+  },
   SET_CUSTOM_AVATAR (state, payload) {
     state.settings.customAvatar = payload
     state.entityState.customState.avatarUrl = payload
@@ -83,22 +88,38 @@ const mutations = {
   },
   TOGGLE_SETTINGS_MODAL (state) {
     state.settings.modalVisible = !state.settings.modalVisible
+  },
+  TOGGLE_SOUND (state) {
+    state.entityState.properties.sound = !state.entityState.properties.sound
+  },
+  TOGGLE_MIC (state) {
+    state.entityState.properties.mic = !state.entityState.properties.mic
+  },
+  TOGGLE_VIDEO (state) {
+    state.entityState.properties.video = !state.entityState.properties.video
   }
 }
 const actions = {
 
 }
 const getters = {
-  customAvatar: state => state.settings.customAvatar,
+  customAvatar: state => state.entityState.customState.avatarUrl,
   iid: state => state.iid,
   entityState: state => state.entityState,
+  displayName: state => state.entityState.properties.displayName,
   locations: state => state.locations,
   locationModalVisible: state => state.locations.modalVisible,
+  mic: state => state.entityState.properties.mic,
   neighbors: state => state.neighbors,
   scene: state => state.scene,
   settings: state => state.settings,
   settingsModalVisible: state => state.settings.modalVisible,
-  universe: state => state.entityState.universe
+  sound: state => {
+    console.log('variable', state.entityState.properties.sound)
+    return state.entityState.properties.sound
+  },
+  universe: state => state.entityState.universe,
+  video: state => state.entityState.properties.video
 }
 export default new Vuex.Store({
   state: state,

@@ -1,5 +1,7 @@
 <template>
 <div class="Home">
+  <Nav @onAudioClicked="toggleAudio()" @onMicClicked="toggleMic()" @onVideoClicked="toggleVideo()" />
+  <audio src="" max="1" high="0.25" ref="AudioElement"></audio>
   <div class="columns is-gapless">
 
     <div class="column is-9">
@@ -15,6 +17,9 @@
           :markers="neighbors"
         />
       </div>
+      <div class="video" v-show="video">
+        <video src="" autoplay poster="" ref="VideoElement"></video>
+      </div>
       <div class="neighbors">
         <h6 class="heading">Neighbors</h6>
         <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :neighborState="neighbor" />
@@ -27,18 +32,22 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ExaQuarkJs from 'exaquark-js/core'
 import Canvas from '@/components/Canvas.vue'
+import ExaQuarkJs from 'exaquark-js/core'
+import ExaQuarkMedia from '@/utils/browserMedia'
+import Nav from '@/components/Nav.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 import World from '@/utils/world'
 var world = World.getInstance()
 var exaQuark = null
+var media = null
 
 var Home = {
   name: 'Home',
   components: {
     Canvas,
+    Nav,
     NeighborListItem,
     Radar
   },
@@ -65,6 +74,7 @@ var Home = {
     exaQuark.on('neighbor:updates', entityState => {
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
+      console.log('exaQuark', exaQuark.sendBroadcastSignal({test: 'hello'}))
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {
@@ -77,14 +87,17 @@ var Home = {
     this.addControls()
     world.setOriginLatLng(this.entityState.geo.lat, this.entityState.geo.lng)
     this.startEventLoop()
+    media = new ExaQuarkMedia()
   },
   computed: {
     ...mapGetters([
       'addressGeo',
       'customAvatar',
       'entityState',
+      'mic',
       'neighbors',
-      'universe'
+      'universe',
+      'video'
     ])
   },
   data: () => {
@@ -97,12 +110,12 @@ var Home = {
   },
   methods: {
     getState: function () {
-      if (this.entityState.properties.displayName) console.log('this.displayName', this.entityState.properties.displayName)
       return this.entityState
     },
     startEventLoop: function () {
       setInterval(() => {
         this.$store.commit('SET_POSITION', world.getPositionAsGeo())
+        this.saveStateToLocalStorage()
       }, 50)
     },
     addControls () {
@@ -155,13 +168,40 @@ var Home = {
     },
     saveStateToLocalStorage: function () {
       if (localStorage) localStorage.setItem('chatmapEntityState', JSON.stringify(this.entityState))
+    },
+    toggleAudio: function () {
+      this.$store.commit('TOGGLE_SOUND')
+    },
+    toggleMic: async function () {
+      if (!this.mic) {
+        if (!this.media) {
+          media.initAudio(this.$refs.AudioElement).then((response, reject) => {
+            console.log('response', response)
+            console.log('response', response)
+            console.log('this.media', media)
+          })
+        }
+      } else {
+        media.stopAudio()
+      }
+      this.$store.commit('TOGGLE_MIC')
+    },
+    toggleVideo: async function () {
+      if (!this.video) {
+        if (!this.media) {
+          media.initVideo(this.$refs.VideoElement)
+        }
+      } else {
+        console.log('stopping')
+        media.stopVideo()
+      }
+      this.$store.commit('TOGGLE_VIDEO')
     }
   }
 }
 export default Home
 </script>
-
-<style lang="scss">
+<style lang="scss" scoped>
 $screenHeightWithoutMenu: calc(100vh - 3.25rem - 2px); // height of Navbar and border
 .Home {
   .column {
