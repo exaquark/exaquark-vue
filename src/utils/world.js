@@ -2,11 +2,18 @@
 // var justOneInstance = World.getInstance()
 
 import NeighborsSet from './neighborsSet'
+import GLTF2Loader from 'three-gltf2-loader'
 const THREE = require('three')
 const PointerLockControls = require('three-pointerlock')
 
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
+
+GLTF2Loader(THREE)
+console.log(typeof THREE.GLTF2Loader)
+
+var loader = new THREE.GLTFLoader()
+console.log('loader', loader)
 
 var World = (function () {
   function World () {
@@ -172,6 +179,21 @@ var World = (function () {
         // add controls
         instance.controls = new PointerLockControls(instance.camera)
         instance.scene.add(instance.controls.getObject())
+
+        // gltf
+        loader.load('/static/gltf/pony_cartoon/scene.gltf', gltf => {
+        // loader.load('/static/gltf/eiffel_tower/scene.gltf', gltf => {
+          // gltf.scene.traverse(child => {
+          //   // if (child.isMesh) {
+          //   //   child.material.envMap = envMap
+          //   // }
+          // })
+          console.log('gltf', gltf)
+          gltf.scene.scale.set(0.04, 0.04, 0.04)
+          gltf.scene.position.set(0, 0, -100)
+          instance.scene.add(gltf.scene)
+          // console.log('gltf', gltf)
+        })
 
         // start the animation
         instance.animate()
