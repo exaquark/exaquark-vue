@@ -13,7 +13,8 @@ GLTF2Loader(THREE)
 console.log(typeof THREE.GLTF2Loader)
 
 var loader = new THREE.GLTFLoader()
-console.log('loader', loader)
+var mixer = null
+var clock = new THREE.Clock()
 
 var World = (function () {
   function World () {
@@ -94,6 +95,8 @@ var World = (function () {
         let onObject = intersections.length > 0
         let time = performance.now()
         let delta = (time - self.prevTime) / 1000
+
+        if (mixer) mixer.update(clock.getDelta())
 
         self.velocity.x -= self.velocity.x * 10.0 * delta
         self.velocity.z -= self.velocity.z * 10.0 * delta
@@ -181,18 +184,40 @@ var World = (function () {
         instance.scene.add(instance.controls.getObject())
 
         // gltf
-        loader.load('/static/gltf/pony_cartoon/scene.gltf', gltf => {
+        // var tex = new THREE.TextureLoader().load('/static/gltf/alla/textures/material_0_baseColor.jpg')
+        // var tex = new THREE.TextureLoader().load('/static/gltf/alla/textures/material_0_baseColor.jpg')
+        // loader.load('/static/gltf/mech_drone/scene.gltf', gltf => {
+        loader.load('/static/gltf/cesium_man/CesiumMan.gltf', gltf => {
+        // loader.load('/static/gltf/alla/scene.gltf', gltf => {
+        // loader.load('/static/gltf/pony_cartoon/scene.gltf', gltf => {
         // loader.load('/static/gltf/eiffel_tower/scene.gltf', gltf => {
-          // gltf.scene.traverse(child => {
-          //   // if (child.isMesh) {
-          //   //   child.material.envMap = envMap
-          //   // }
-          // })
-          console.log('gltf', gltf)
-          gltf.scene.scale.set(0.04, 0.04, 0.04)
-          gltf.scene.position.set(0, 0, -100)
+          let object = gltf.scene
+          gltf.scene.traverse(node => {
+            if (node.isMesh) {
+              // child.material.envMap = envMap
+              // console.log('tex', tex)
+              // console.log('node', node)
+              // node.material.map = tex
+            }
+          })
+          object.position.set(0, 0, -20)
+          object.scale.set(10, 10, 10)
+
+          let animations = gltf.animations
+          if (animations && animations.length) {
+            mixer = new THREE.AnimationMixer(object)
+            for (let i = 0; i < animations.length; i++) {
+              let animation = animations[i]
+              mixer.clipAction(animation).play()
+            }
+          }
           instance.scene.add(gltf.scene)
+          if (mixer) mixer.update(clock.getDelta())
           // console.log('gltf', gltf)
+        }, progress => {
+          // console.log(progress)
+        }, err => {
+          console.error(err)
         })
 
         // start the animation

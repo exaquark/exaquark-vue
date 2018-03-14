@@ -173,28 +173,28 @@ var Home = {
       this.$store.commit('TOGGLE_SOUND')
     },
     toggleMic: async function () {
-      if (!this.mic) {
-        if (!this.media) {
-          media.initAudio(this.$refs.AudioElement).then((response, reject) => {
-            console.log('response', response)
-            console.log('response', response)
-            console.log('this.media', media)
-          })
-        }
-      } else {
-        media.stopAudio()
-      }
+      // if (!this.mic) {
+      //   if (!this.media) {
+      //     media.initAudio(this.$refs.AudioElement).then((response, reject) => {
+      //       console.log('response', response)
+      //       console.log('response', response)
+      //       console.log('this.media', media)
+      //     })
+      //   }
+      // } else {
+      //   media.stopAudio()
+      // }
       this.$store.commit('TOGGLE_MIC')
     },
     toggleVideo: async function () {
-      if (!this.video) {
-        if (!this.media) {
-          media.initVideo(this.$refs.VideoElement)
-        }
-      } else {
-        console.log('stopping')
-        media.stopVideo()
-      }
+      // if (!this.video) {
+      //   if (!this.media) {
+      //     media.initVideo(this.$refs.VideoElement)
+      //   }
+      // } else {
+      //   console.log('stopping')
+      //   media.stopVideo()
+      // }
       this.$store.commit('TOGGLE_VIDEO')
     }
   }
