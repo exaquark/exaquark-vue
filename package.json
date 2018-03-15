@@ -21,6 +21,7 @@
     "three-gltf2-loader": "^1.2.0",
     "three-pointerlock": "0.0.2",
     "vue": "^2.5.2",
+    "vue-multianalytics": "^1.9.2",
     "vue-router": "^3.0.1",
     "vue2-google-maps": "^0.8.4",
     "vuex": "^3.0.1"
