@@ -100,14 +100,19 @@ function Neighbor (entityState) {
   this.initAvatar = function () {
     let self = this
     self.avatar = true // temporarily make it !null
-    let avatarUrl = (this.state.properties && this.state.properties.entityType == 'HUMAN')
+    let avatarUrl = (this.state.properties && this.state.properties.entityType === 'HUMAN')
       ? '/static/gltf/cesium_man/CesiumMan.gltf'
       : '/static/gltf/bot/Bot_Skinned.gltf'
+      // : '/static/gltf/mech_drone/scene.gltf'
     return new Promise((resolve, reject) => {
       loader.load(avatarUrl, gltf => {
         self.avatar = gltf.scene
         self.avatar.scale.set(5, 5, 5)
         self.model.gltf = gltf
+
+        // self.avatar.traverse(node => {
+        //   if (node.isMesh) node.castShadow = true
+        // })
 
         // animations
         let animations = self.model.gltf.animations
