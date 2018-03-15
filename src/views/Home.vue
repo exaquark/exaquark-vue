@@ -22,7 +22,7 @@
       </div>
       <div class="neighbors">
         <h6 class="heading">Neighbors</h6>
-        <NeighborListItem v-for="neighbor in neighbors" :key="neighbor.iid" :neighborState="neighbor" />
+        <NeighborListItem v-for="neighbor in humanNeighbors" :key="neighbor.iid" :neighborState="neighbor" />
       </div>
     </div>
 
@@ -34,14 +34,14 @@
 import { mapGetters } from 'vuex'
 import Canvas from '@/components/Canvas.vue'
 import ExaQuarkJs from 'exaquark-js/core'
-import ExaQuarkMedia from '@/utils/browserMedia'
+// import ExaQuarkMedia from '@/utils/browserMedia'
 import Nav from '@/components/Nav.vue'
 import NeighborListItem from '@/components/NeighborListItem.vue'
 import Radar from '@/components/Radar.vue'
 import World from '@/utils/world'
 var world = World.getInstance()
 var exaQuark = null
-var media = null
+// var media = null
 
 var Home = {
   name: 'Home',
@@ -52,7 +52,7 @@ var Home = {
     Radar
   },
   created: function () {
-    const exaQuarkUrl = 'https://enter.exaquark.com'
+    const exaQuarkUrl = 'https://enteralpha.exaquark.com'
 
     var apiKey = 'YOUR_API_KEY' // required
     let options = {
@@ -64,6 +64,7 @@ var Home = {
 
     exaQuark = new ExaQuarkJs(exaQuarkUrl, apiKey, options)
     exaQuark.on('neighbor:enter', entityState => {
+      if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
@@ -72,12 +73,13 @@ var Home = {
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:updates', entityState => {
+      if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
       this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
-      console.log('exaQuark', exaQuark.sendBroadcastSignal({test: 'hello'}))
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {
+      console.log('iid', iid)
       this.$store.commit('SET_IID', iid)
       exaQuark.push('ask:neighbours')
     }).catch('err', err => { console.error(err) })
@@ -87,7 +89,6 @@ var Home = {
     this.addControls()
     world.setOriginLatLng(this.entityState.geo.lat, this.entityState.geo.lng)
     this.startEventLoop()
-    media = new ExaQuarkMedia()
   },
   computed: {
     ...mapGetters([
@@ -98,7 +99,10 @@ var Home = {
       'neighbors',
       'universe',
       'video'
-    ])
+    ]),
+    humanNeighbors: function () {
+      return this.neighbors.filter(n => n.properties && n.properties.entityType === 'HUMAN')
+    }
   },
   data: () => {
     return {}
@@ -190,7 +194,7 @@ var Home = {
       // if (!this.video) {
       //   if (!this.media) {
       //     media.initVideo(this.$refs.VideoElement)
-      //   }
+      //   }e
       // } else {
       //   console.log('stopping')
       //   media.stopVideo()

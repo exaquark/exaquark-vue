@@ -8,7 +8,7 @@
             <img :src="avatarUrl" alt="avatar">
           </p>
         </figure>
-        <div class="media-content">
+        <div class="media-content" v-if="neighborState.properties">
           <div class="content">
             <strong>{{neighborState.properties.displayName || neighborState.iid}}</strong>
             <h4 class="heading is-5">{{distance}} km</h4>

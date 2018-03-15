@@ -1,4 +1,7 @@
+import GLTF2Loader from 'three-gltf2-loader'
 const THREE = require('three')
+GLTF2Loader(THREE)
+var loader = new THREE.GLTFLoader()
 
 // neighbors
 // var avatarGeometry = new THREE.SphereGeometry(5, 32, 32)
@@ -41,7 +44,7 @@ var NeighborsSet = {
   },
   removeNeighbor: function (iid) {
     if (NeighborsSet.set.hasOwnProperty(iid)) {
-      let n = NeighborsSet.set[iid]
+      let n = Object.assign(NeighborsSet.set[iid])
       delete NeighborsSet.set[iid]
       return n
     }
@@ -79,9 +82,6 @@ var NeighborsSet = {
       return neighbor
     }
     var newNeighbor = new Neighbor(entityState)
-    if (!newNeighbor.state.customState.webrtc) {
-      return newNeighbor
-    }
     return newNeighbor
   }
 }
@@ -90,15 +90,53 @@ export default NeighborsSet
 function Neighbor (entityState) {
   this.state = entityState
   this.iid = entityState.iid
-  this.avatar = new THREE.Mesh(avatarGeometry, avatarMaterial)
-  this.avatar.position.x = 10
-  this.avatar.position.y = 10
-  this.avatar.position.z = 10
+  this.avatar = null
+  this.model = {
+    gltf: null,
+    mixer: null,
+    clock: new THREE.Clock()
+  }
+  // this.avatar = new THREE.Mesh(avatarGeometry, avatarMaterial)
+  // this.avatar.position.x = 10
+  // this.avatar.position.y = 10
+  // this.avatar.position.z = 10
 
-  this.updatePosition = function (x, y, z) {
-    this.avatar.position.x = x
-    this.avatar.position.y = y
-    this.avatar.position.z = z
+  this.initAvatar = function () {
+    let self = this
+    self.avatar = true // temporarily make it !null
+    return new Promise((resolve, reject) => {
+      loader.load('/static/gltf/cesium_man/CesiumMan.gltf', gltf => {
+        self.avatar = gltf.scene
+        self.avatar.scale.set(10, 10, 10)
+        self.model.gltf = gltf
+
+        // animations
+        let animations = self.model.gltf.animations
+        if (animations && animations.length) {
+          self.model.mixer = new THREE.AnimationMixer(self.avatar)
+          for (let i = 0; i < animations.length; i++) {
+            let animation = animations[i]
+            self.model.mixer.clipAction(animation).play()
+          }
+        }
+        return resolve(self.avatar)
+      })
+    })
+  }
+  this.updateAnimation = function (delta) {
+    if (this.model && this.model.mixer) this.model.mixer.update(delta)
+  }
+  this.updatePosition = function (x, y, z, rotation) {
+    if (this.avatar && this.avatar.position) {
+      this.avatar.position.x = x
+      this.avatar.position.y = y
+      this.avatar.position.z = z
+      if (rotation) {
+        this.avatar.rotation.x = rotation[0]
+        this.avatar.rotation.y = rotation[1]
+        this.avatar.rotation.z = rotation[2]
+      }
+    }
   }
   this.getGeo = function () {
     return this.state.geo

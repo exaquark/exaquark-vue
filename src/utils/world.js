@@ -2,19 +2,11 @@
 // var justOneInstance = World.getInstance()
 
 import NeighborsSet from './neighborsSet'
-import GLTF2Loader from 'three-gltf2-loader'
 const THREE = require('three')
 const PointerLockControls = require('three-pointerlock')
 
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
-
-GLTF2Loader(THREE)
-console.log(typeof THREE.GLTF2Loader)
-
-var loader = new THREE.GLTFLoader()
-var mixer = null
-var clock = new THREE.Clock()
 
 var World = (function () {
   function World () {
@@ -66,14 +58,17 @@ var World = (function () {
     }
     this.insertOrUpdateNeighbor = function (iid, state) {
       let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state)
-      this.scene.add(n.avatar)
-      this.objects.push(n.avatar)
+      if (!n.avatar) {
+        n.initAvatar().then(result => {
+          this.scene.add(result)
+        })
+      }
     }
     this.removeNeighbor = function (iid) {
       let n = this.neighborsSet.removeNeighbor(iid)
-      console.log('n', iid)
-      this.scene.remove(n.avatar)
-      console.log('this.objects', this.objects)
+      if (n && n.avatar) {
+        this.scene.remove(n.avatar)
+      }
     }
     this.changeUniverse = function (universe) {
       if (universe === 'SANDBOX_BLACK') {
@@ -95,8 +90,6 @@ var World = (function () {
         let onObject = intersections.length > 0
         let time = performance.now()
         let delta = (time - self.prevTime) / 1000
-
-        if (mixer) mixer.update(clock.getDelta())
 
         self.velocity.x -= self.velocity.x * 10.0 * delta
         self.velocity.z -= self.velocity.z * 10.0 * delta
@@ -125,9 +118,11 @@ var World = (function () {
         // update neighbor positions
         self.neighborsSet.doForEach(n => {
           let nGeo = n.getGeo()
+          // console.log('nGeo', nGeo)
           if (nGeo.lat && nGeo.lng) {
             let nPos = self.latLngToVector(nGeo.lat, nGeo.lng, nGeo.altitude)
-            n.updatePosition(nPos[0], nPos[1], nPos[2])
+            n.updatePosition(nPos[0], nPos[1], nPos[2], nGeo.rotation)
+            n.updateAnimation(delta)
           }
 
           // console.log('geo', nGeo)
@@ -182,43 +177,6 @@ var World = (function () {
         // add controls
         instance.controls = new PointerLockControls(instance.camera)
         instance.scene.add(instance.controls.getObject())
-
-        // gltf
-        // var tex = new THREE.TextureLoader().load('/static/gltf/alla/textures/material_0_baseColor.jpg')
-        // var tex = new THREE.TextureLoader().load('/static/gltf/alla/textures/material_0_baseColor.jpg')
-        // loader.load('/static/gltf/mech_drone/scene.gltf', gltf => {
-        loader.load('/static/gltf/cesium_man/CesiumMan.gltf', gltf => {
-        // loader.load('/static/gltf/alla/scene.gltf', gltf => {
-        // loader.load('/static/gltf/pony_cartoon/scene.gltf', gltf => {
-        // loader.load('/static/gltf/eiffel_tower/scene.gltf', gltf => {
-          let object = gltf.scene
-          gltf.scene.traverse(node => {
-            if (node.isMesh) {
-              // child.material.envMap = envMap
-              // console.log('tex', tex)
-              // console.log('node', node)
-              // node.material.map = tex
-            }
-          })
-          object.position.set(0, 0, -20)
-          object.scale.set(10, 10, 10)
-
-          let animations = gltf.animations
-          if (animations && animations.length) {
-            mixer = new THREE.AnimationMixer(object)
-            for (let i = 0; i < animations.length; i++) {
-              let animation = animations[i]
-              mixer.clipAction(animation).play()
-            }
-          }
-          instance.scene.add(gltf.scene)
-          if (mixer) mixer.update(clock.getDelta())
-          // console.log('gltf', gltf)
-        }, progress => {
-          // console.log(progress)
-        }, err => {
-          console.error(err)
-        })
 
         // start the animation
         instance.animate()

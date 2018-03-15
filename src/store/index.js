@@ -114,10 +114,7 @@ const getters = {
   scene: state => state.scene,
   settings: state => state.settings,
   settingsModalVisible: state => state.settings.modalVisible,
-  sound: state => {
-    console.log('variable', state.entityState.properties.sound)
-    return state.entityState.properties.sound
-  },
+  sound: state => state.entityState.properties.sound,
   universe: state => state.entityState.universe,
   video: state => state.entityState.properties.video
 }
