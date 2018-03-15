@@ -101,6 +101,7 @@ var Home = {
       'video'
     ]),
     humanNeighbors: function () {
+      // console.log('this.neighbors', this.neighbors)
       return this.neighbors.filter(n => n.properties && n.properties.entityType === 'HUMAN')
     }
   },

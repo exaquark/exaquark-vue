@@ -96,16 +96,15 @@ function Neighbor (entityState) {
     mixer: null,
     clock: new THREE.Clock()
   }
-  // this.avatar = new THREE.Mesh(avatarGeometry, avatarMaterial)
-  // this.avatar.position.x = 10
-  // this.avatar.position.y = 10
-  // this.avatar.position.z = 10
 
   this.initAvatar = function () {
     let self = this
     self.avatar = true // temporarily make it !null
+    let avatarUrl = (this.state.properties && this.state.properties.entityType == 'HUMAN')
+      ? '/static/gltf/cesium_man/CesiumMan.gltf'
+      : '/static/gltf/bot/Bot_Skinned.gltf'
     return new Promise((resolve, reject) => {
-      loader.load('/static/gltf/cesium_man/CesiumMan.gltf', gltf => {
+      loader.load(avatarUrl, gltf => {
         self.avatar = gltf.scene
         self.avatar.scale.set(5, 5, 5)
         self.model.gltf = gltf
