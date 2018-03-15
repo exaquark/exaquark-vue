@@ -2,12 +2,28 @@
 // var justOneInstance = World.getInstance()
 
 import NeighborsSet from './neighborsSet'
+import GLTF2Loader from 'three-gltf2-loader'
 const THREE = require('three')
 const PointerLockControls = require('three-pointerlock')
 
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
 const CAMERA_HEIGHT = 5
+
+// temp hardcode an object
+GLTF2Loader(THREE)
+var gltfLoader = new THREE.GLTFLoader()
+var fixedObjects = [
+  {
+    url: '/static/gltf/eiffel_tower/scene.gltf',
+    lat: 48.8584,
+    lng: 2.2945,
+    altitude: -5,
+    gltf: null,
+    object: null,
+    scale: 0.001
+  }
+]
 
 var World = (function () {
   function World () {
@@ -126,6 +142,12 @@ var World = (function () {
             n.updateAnimation(delta)
           }
         })
+        fixedObjects.forEach(fo => {
+          if (fo.object) {
+            let pos = self.latLngToVector(fo.lat, fo.lng, fo.altitude)
+            fo.object.position.set(pos[0], pos[1], pos[2])
+          }
+        })
       }
       self.renderer.render(self.scene, self.camera)
     }
@@ -175,6 +197,17 @@ var World = (function () {
         // add controls
         instance.controls = new PointerLockControls(instance.camera)
         instance.scene.add(instance.controls.getObject())
+
+        // gltf
+        fixedObjects.forEach(fo => {
+          gltfLoader.load(fo.url, gltf => {
+            fo.object = gltf.scene
+            fo.object.position.set(-2000, fo.altitude, -2000) // hide it for now
+            fo.object.scale.set(fo.scale, fo.scale, fo.scale)
+            instance.scene.add(fo.object)
+            // console.log('gltf', gltf)
+          })
+        })
 
         // start the animation
         instance.animate()
