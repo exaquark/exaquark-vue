@@ -7,6 +7,7 @@ const PointerLockControls = require('three-pointerlock')
 
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
+const CAMERA_HEIGHT = 5
 
 var World = (function () {
   function World () {
@@ -25,7 +26,8 @@ var World = (function () {
     this.neighborsSet = NeighborsSet
 
     this.resize = function (pixelRatio, width, height) {
-      this.camera.aspect = window.innerWidth / window.innerHeight
+      // this.camera.aspect = window.innerWidth / window.innerHeight
+      this.camera.aspect = width / height
       this.camera.updateProjectionMatrix()
       this.renderer.setPixelRatio(pixelRatio)
       this.renderer.setSize(width, height)
@@ -53,7 +55,7 @@ var World = (function () {
       return {
         lat: latLng.lat,
         lng: latLng.lng,
-        altitude: pos.y
+        altitude: pos.y - CAMERA_HEIGHT
       }
     }
     this.insertOrUpdateNeighbor = function (iid, state) {
@@ -85,15 +87,15 @@ var World = (function () {
       requestAnimationFrame(self.animate)
       if (self.controlsEnabled === true) {
         self.raycaster.ray.origin.copy(self.controls.getObject().position)
-        self.raycaster.ray.origin.y -= 10
+        self.raycaster.ray.origin.y -= 1000
         let intersections = self.raycaster.intersectObjects(self.objects)
         let onObject = intersections.length > 0
         let time = performance.now()
         let delta = (time - self.prevTime) / 1000
 
-        self.velocity.x -= self.velocity.x * 10.0 * delta
-        self.velocity.z -= self.velocity.z * 10.0 * delta
-        self.velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
+        self.velocity.x -= self.velocity.x * 50.0 * delta
+        self.velocity.z -= self.velocity.z * 50.0 * delta
+        self.velocity.y -= 9.8 * 500.0 * delta // 100.0 = mass
 
         self.direction.z = Number(self.moveForward) - Number(self.moveBackward)
         self.direction.x = Number(self.moveLeft) - Number(self.moveRight)
@@ -108,9 +110,9 @@ var World = (function () {
         self.controls.getObject().translateX(self.velocity.x * delta)
         self.controls.getObject().translateY(self.velocity.y * delta)
         self.controls.getObject().translateZ(self.velocity.z * delta)
-        if (self.controls.getObject().position.y < 10) {
+        if (self.controls.getObject().position.y < CAMERA_HEIGHT) {
           self.velocity.y = 0
-          self.controls.getObject().position.y = 10
+          self.controls.getObject().position.y = CAMERA_HEIGHT
           self.canJump = true
         }
         self.prevTime = time
@@ -118,15 +120,11 @@ var World = (function () {
         // update neighbor positions
         self.neighborsSet.doForEach(n => {
           let nGeo = n.getGeo()
-          // console.log('nGeo', nGeo)
           if (nGeo.lat && nGeo.lng) {
             let nPos = self.latLngToVector(nGeo.lat, nGeo.lng, nGeo.altitude)
             n.updatePosition(nPos[0], nPos[1], nPos[2], nGeo.rotation)
             n.updateAnimation(delta)
           }
-
-          // console.log('geo', nGeo)
-          // n.updatePosition()
         })
       }
       self.renderer.render(self.scene, self.camera)
@@ -157,12 +155,12 @@ var World = (function () {
         // create a floor
         var floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100)
         floorGeometry.rotateX(-Math.PI / 2)
-        for (let i = 0, l = floorGeometry.vertices.length; i < l; i++) {
-          var vertex = floorGeometry.vertices[i]
-          vertex.x += Math.random() * 20 - 10
-          vertex.y += Math.random() * 2
-          vertex.z += Math.random() * 20 - 10
-        }
+        // for (let i = 0, l = floorGeometry.vertices.length; i < l; i++) {
+        //   var vertex = floorGeometry.vertices[i]
+        //   // vertex.x += Math.random() * 20 - 10
+        //   // vertex.y += Math.random() * 2
+        //   // vertex.z += Math.random() * 20 - 10
+        // }
         for (let i = 0, l = floorGeometry.faces.length; i < l; i++) {
           var face = floorGeometry.faces[i]
           face.vertexColors[0] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)

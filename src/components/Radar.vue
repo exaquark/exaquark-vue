@@ -23,7 +23,7 @@ import RadarMarker from '@/components/RadarMarker.vue'
 Vue.component('google-map', VueGoogleMaps.Map)
 Vue.component('google-marker', VueGoogleMaps.Marker)
 const DEFAULT_AVATAR = process.env.AVATARS.ME // /config/prod.env.js
-const DEFAULT_ZOOM_LEVEL = 19
+const DEFAULT_ZOOM_LEVEL = 17
 export default {
   name: 'Radar',
   props: {

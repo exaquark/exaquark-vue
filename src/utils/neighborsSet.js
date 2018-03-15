@@ -107,7 +107,7 @@ function Neighbor (entityState) {
     return new Promise((resolve, reject) => {
       loader.load('/static/gltf/cesium_man/CesiumMan.gltf', gltf => {
         self.avatar = gltf.scene
-        self.avatar.scale.set(10, 10, 10)
+        self.avatar.scale.set(5, 5, 5)
         self.model.gltf = gltf
 
         // animations
