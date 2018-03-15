@@ -14,7 +14,7 @@
 
 <script>
 const DEFAULT_AVATAR = process.env.AVATARS.NEIGHBORS // /config/prod.env.js
-const DEFAULT_BOT_AVATAR = '/static/images/a42dfafbce8fb26e56f698a8bc14da5b.gif'
+const DEFAULT_BOT_AVATAR = '/static/images/051ab4711df54275e98341d84ac68ed6.gif'
 export default {
   name: 'RadarMarker',
   props: {
