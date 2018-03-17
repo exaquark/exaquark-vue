@@ -66,16 +66,16 @@ var Home = {
     exaQuark.on('neighbor:enter', entityState => {
       if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
+      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:leave', iid => {
       world.removeNeighbor(iid)
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
+      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:updates', entityState => {
       if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
-      this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
+      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {

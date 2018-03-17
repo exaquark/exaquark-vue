@@ -9,6 +9,7 @@ const PointerLockControls = require('three-pointerlock')
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
 const CAMERA_HEIGHT = 5
+const RELEVANCE_TOLERANCE = 3
 
 // temp hardcode an object
 GLTF2Loader(THREE)
@@ -76,7 +77,7 @@ var World = (function () {
     }
     this.insertOrUpdateNeighbor = function (iid, state) {
       let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state)
-      if (!n.avatar) {
+      if (!n.avatar && n.getRelevance() <= RELEVANCE_TOLERANCE) {
         n.initAvatar().then(result => {
           this.scene.add(result)
         })
@@ -139,7 +140,7 @@ var World = (function () {
           if (nGeo.lat && nGeo.lng) {
             let nPos = self.latLngToVector(nGeo.lat, nGeo.lng, nGeo.altitude)
             n.updatePosition(nPos[0], nPos[1], nPos[2], nGeo.rotation)
-            n.updateAnimation(delta)
+            if (n.getRelevance() <= 1) n.updateAnimation(delta)
           }
         })
         fixedObjects.forEach(fo => {
@@ -177,12 +178,6 @@ var World = (function () {
         // create a floor
         var floorGeometry = new THREE.PlaneGeometry(2000, 2000, 100, 100)
         floorGeometry.rotateX(-Math.PI / 2)
-        // for (let i = 0, l = floorGeometry.vertices.length; i < l; i++) {
-        //   var vertex = floorGeometry.vertices[i]
-        //   // vertex.x += Math.random() * 20 - 10
-        //   // vertex.y += Math.random() * 2
-        //   // vertex.z += Math.random() * 20 - 10
-        // }
         for (let i = 0, l = floorGeometry.faces.length; i < l; i++) {
           var face = floorGeometry.faces[i]
           face.vertexColors[0] = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)

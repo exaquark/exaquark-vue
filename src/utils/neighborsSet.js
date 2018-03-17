@@ -107,7 +107,7 @@ function Neighbor (entityState) {
     return new Promise((resolve, reject) => {
       loader.load(avatarUrl, gltf => {
         self.avatar = gltf.scene
-        self.avatar.scale.set(5, 5, 5)
+        // self.avatar.scale.set(5, 5, 5)
 
         if (this.state.properties && this.state.properties.entityType === 'BOT') {
           self.avatar.scale.set(0.03, 0.03, 0.03)
@@ -130,6 +130,9 @@ function Neighbor (entityState) {
         return resolve(self.avatar)
       })
     })
+  }
+  this.getRelevance = function () {
+    return this.state.neighborLevel
   }
   this.updateAnimation = function (delta) {
     if (this.model && this.model.mixer) this.model.mixer.update(delta)
