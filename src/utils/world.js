@@ -9,7 +9,7 @@ const PointerLockControls = require('three-pointerlock')
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
 const CAMERA_HEIGHT = 5
-const RELEVANCE_TOLERANCE = 3
+const RELEVANCE_TOLERANCE = 1
 
 // temp hardcode an object
 GLTF2Loader(THREE)
@@ -42,6 +42,7 @@ var World = (function () {
     this.originLat = null
     this.neighborsSet = NeighborsSet
 
+    // for resizing the canvas
     this.resize = function (pixelRatio, width, height) {
       // this.camera.aspect = window.innerWidth / window.innerHeight
       this.camera.aspect = width / height
@@ -79,7 +80,11 @@ var World = (function () {
       let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state)
       if (!n.avatar && n.getRelevance() <= RELEVANCE_TOLERANCE) {
         n.initAvatar().then(result => {
-          this.scene.add(result)
+          result.name = iid
+          if (!this.scene.getObjectByName(iid)) this.scene.add(result)
+          else {
+            console.log('already has this object')
+          }
         })
       }
     }
@@ -114,11 +119,11 @@ var World = (function () {
         self.velocity.z -= self.velocity.z * 50.0 * delta
         self.velocity.y -= 9.8 * 500.0 * delta // 100.0 = mass
 
-        self.direction.z = Number(self.moveForward) - Number(self.moveBackward)
+        self.direction.z = Number(self.moveBackward) - Number(self.moveForward)
         self.direction.x = Number(self.moveLeft) - Number(self.moveRight)
         self.direction.normalize() // this ensures consistent movements in all directions
 
-        if (self.moveForward || self.moveBackward) self.velocity.z -= self.direction.z * 400.0 * delta
+        if (self.moveForward || self.moveBackward) self.velocity.z += self.direction.z * 400.0 * delta
         if (self.moveLeft || self.moveRight) self.velocity.x -= self.direction.x * 400.0 * delta
         if (onObject === true) {
           self.velocity.y = Math.max(0, self.velocity.y)
@@ -140,7 +145,7 @@ var World = (function () {
           if (nGeo.lat && nGeo.lng) {
             let nPos = self.latLngToVector(nGeo.lat, nGeo.lng, nGeo.altitude)
             n.updatePosition(nPos[0], nPos[1], nPos[2], nGeo.rotation)
-            if (n.getRelevance() <= 1) n.updateAnimation(delta)
+            if (n.getRelevance() <= RELEVANCE_TOLERANCE) n.updateAnimation(delta)
           }
         })
         fixedObjects.forEach(fo => {

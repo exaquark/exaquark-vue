@@ -34,6 +34,11 @@ var NeighborsSet = {
     }
     return nb - 1
   },
+  asArray: function (neighborLevel) {
+    let array = Object.values(NeighborsSet.set)
+    if (neighborLevel) array = array.filter(n => n.state.neighborLevel <= neighborLevel)
+    return array
+  },
   doForEach: function (f) {
     for (var iid in NeighborsSet.set) {
       if (NeighborsSet.set.hasOwnProperty(iid)) {
@@ -75,13 +80,12 @@ var NeighborsSet = {
       NeighborsSet.removeNeighbor(iid)
     }
   },
-  insertOrUpdateNeighbor: function (iid, entityState) {
-    if (NeighborsSet.set.hasOwnProperty(iid)) {
-      var neighbor = NeighborsSet.set[iid]
-      neighbor.update(entityState)
-      return neighbor
+  insertOrUpdateNeighbor: function (iid, neighborState) {
+    if (NeighborsSet.set.hasOwnProperty(neighborState.iid)) {
+      NeighborsSet.set[neighborState.iid].update(neighborState)
+      return NeighborsSet.set[neighborState.iid]
     }
-    var newNeighbor = new Neighbor(entityState)
+    var newNeighbor = new Neighbor(neighborState)
     return newNeighbor
   }
 }
@@ -95,6 +99,10 @@ function Neighbor (entityState) {
     gltf: null,
     mixer: null,
     clock: new THREE.Clock()
+  }
+
+  this.update = function (state) {
+    this.state = state
   }
 
   this.initAvatar = function () {
@@ -154,10 +162,4 @@ function Neighbor (entityState) {
   }
 
   NeighborsSet.set[this.iid] = this
-}
-
-Neighbor.prototype = {
-  update: function (state) {
-    this.state = state
-  }
 }

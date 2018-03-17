@@ -66,16 +66,13 @@ var Home = {
     exaQuark.on('neighbor:enter', entityState => {
       if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
-      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:leave', iid => {
       world.removeNeighbor(iid)
-      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
     })
     exaQuark.on('neighbor:updates', entityState => {
-      if (entityState.iid === this.iid) console.log('self?', entityState.iid === this.iid)
       world.insertOrUpdateNeighbor(entityState.iid, entityState)
-      // this.$store.commit('SET_NEIGHBOUR_LIST', exaQuark.neighbors())
+      this.neighbors = world.neighborsSet.asArray(1).map(n => n.state)
     })
 
     exaQuark.connect(this.entityState).then(({ iid }) => {
@@ -96,17 +93,20 @@ var Home = {
       'customAvatar',
       'entityState',
       'mic',
-      'neighbors',
+      // 'neighbors',
       'universe',
       'video'
     ]),
     humanNeighbors: function () {
       // console.log('this.neighbors', this.neighbors)
-      return this.neighbors.filter(n => n.properties && n.properties.entityType === 'HUMAN')
+      // return this.neighbors.filter(n => n.properties && n.properties.entityType === 'HUMAN')
+      return []
     }
   },
   data: () => {
-    return {}
+    return {
+      neighbors: []
+    }
   },
   watch: {
     universe: function () {
