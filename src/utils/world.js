@@ -10,7 +10,6 @@ const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
 const CAMERA_HEIGHT = 1.5
 const RELEVANCE_TOLERANCE = 3
-
 // temp hardcode an object
 GLTF2Loader(THREE)
 var gltfLoader = new THREE.GLTFLoader()
@@ -22,7 +21,20 @@ var fixedObjects = [
     altitude: -5,
     gltf: null,
     object: null,
-    scale: 0.001
+    scale: 0.001,
+    type: 'GLTF'
+  },
+  {
+    video: null,
+    videoImage: null,
+    videoImageContext: null,
+    videoTexture: null,
+    url: '/static/videos/sintel.ogv',
+    // url: 'https://www.youtube.com/3acbf16a-bded-4f98-b00f-bc76687720d7',
+    lat: 1.29,
+    lng: 103.848,
+    altitude: 60,
+    type: 'SCREEN'
   }
 ]
 
@@ -151,9 +163,16 @@ var World = (function () {
           }
         })
         fixedObjects.forEach(fo => {
-          if (fo.object) {
+          if (fo.object && fo.type === 'GLTF') {
             let pos = self.latLngToVector(fo.lat, fo.lng, fo.altitude)
             fo.object.position.set(pos[0], pos[1], pos[2])
+          } else if (fo.type === 'SCREEN') {
+            if (fo.video.readyState === fo.video.HAVE_ENOUGH_DATA) {
+              let pos = self.latLngToVector(fo.lat, fo.lng, fo.altitude)
+              fo.object.position.set(pos[0], pos[1], pos[2])
+              fo.videoImageContext.drawImage(fo.video, 0, 0)
+              if (fo.videoTexture) fo.videoTexture.needsUpdate = true
+            }
           }
         })
       }
@@ -171,7 +190,7 @@ var World = (function () {
         instance.scene = new THREE.Scene()
         instance.camera = new THREE.PerspectiveCamera(75, 1, 1, 1000)
         instance.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
-        instance.renderer = new THREE.WebGLRenderer()
+        instance.renderer = new THREE.WebGLRenderer({antialias: true})
 
         // set a background
         instance.scene.background = new THREE.Color(0xffffff)
@@ -202,13 +221,42 @@ var World = (function () {
 
         // gltf
         fixedObjects.forEach(fo => {
-          gltfLoader.load(fo.url, gltf => {
-            fo.object = gltf.scene
-            fo.object.position.set(-2000, fo.altitude, -2000) // hide it for now
-            fo.object.scale.set(fo.scale, fo.scale, fo.scale)
+          if (fo.type === 'GLTF') {
+            gltfLoader.load(fo.url, gltf => {
+              fo.object = gltf.scene
+              fo.object.position.set(-2000, fo.altitude, -2000) // hide it for now
+              fo.object.scale.set(fo.scale, fo.scale, fo.scale)
+              instance.scene.add(fo.object)
+              // console.log('gltf', gltf)
+            })
+          } else if (fo.type === 'SCREEN') {
+            fo.video = document.createElement('video')
+            fo.video.src = fo.url
+            // fo.video.crossOrigin = 'anonymous'
+            fo.video.loop = true
+            fo.video.muted = true
+            // fo.video.load() // must call after setting/changing source
+            fo.video.play()
+            fo.videoImage = document.createElement('canvas')
+            fo.videoImage.width = 480
+            fo.videoImage.height = 204
+            fo.videoImageContext = fo.videoImage.getContext('2d')
+            // background color if no video present
+            fo.videoImageContext.fillStyle = '#000000'
+            fo.videoImageContext.fillRect(0, 0, fo.videoImage.width, fo.videoImage.height)
+            fo.videoTexture = new THREE.Texture(fo.videoImage)
+            fo.videoTexture.minFilter = THREE.LinearFilter
+            fo.videoTexture.magFilter = THREE.LinearFilter
+
+            let movieMaterial = new THREE.MeshBasicMaterial({ map: fo.videoTexture, overdraw: true, side: THREE.DoubleSide })
+            // the geometry on which the movie will be displayed;
+            // movie image will be scaled to fit these dimensions.
+            let movieGeometry = new THREE.PlaneGeometry(240, 100, 10, 10)
+            let movieScreen = new THREE.Mesh(movieGeometry, movieMaterial)
+            fo.object = movieScreen
+            fo.object.position.set(0, fo.altitude, 0) // hide it for now
             instance.scene.add(fo.object)
-            // console.log('gltf', gltf)
-          })
+          }
         })
 
         // start the animation
