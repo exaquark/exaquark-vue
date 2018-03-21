@@ -9,8 +9,7 @@ const MAP_API_TOKEN = process.env.MAPS.API_TOKEN // /config/prod.env.js
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: MAP_API_TOKEN,
-    libraries: 'places' // load places for autocomplete
+    key: MAP_API_TOKEN
   }
 })
 

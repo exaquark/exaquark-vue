@@ -32,9 +32,6 @@
           <p class="control">
             <a href="#" class="button is-primary" @click="goToMe()" v-if="geolocationEnabled">My Real Location</a>
           </p>
-          <p class="control is-expanded">
-            <AddressLookup @onChange="setAddressGeo" />
-          </p>
         </div>
 
       </div>
@@ -47,7 +44,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AddressLookup from '@/components/AddressLookup.vue'
 import World from '@/utils/world'
 var world = World.getInstance()
 export default {
@@ -55,7 +51,6 @@ export default {
   props: {
   },
   components: {
-    AddressLookup
   },
   data: () => {
     return {

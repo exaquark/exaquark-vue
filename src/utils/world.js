@@ -8,8 +8,8 @@ const PointerLockControls = require('three-pointerlock')
 
 const EARTH_RADIUS = 6378137 // in meters
 const LAT_FACTOR = 180 / Math.PI / EARTH_RADIUS
-const CAMERA_HEIGHT = 5
-const RELEVANCE_TOLERANCE = 1
+const CAMERA_HEIGHT = 1.5
+const RELEVANCE_TOLERANCE = 3
 
 // temp hardcode an object
 GLTF2Loader(THREE)
@@ -76,17 +76,19 @@ var World = (function () {
         altitude: pos.y - CAMERA_HEIGHT
       }
     }
-    this.insertOrUpdateNeighbor = function (iid, state) {
-      let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state)
-      if (!n.avatar && n.getRelevance() <= RELEVANCE_TOLERANCE) {
+    this.insertOrUpdateNeighbor = function (iid, state, stream, isPeerAuthority) {
+      let n = this.neighborsSet.insertOrUpdateNeighbor(iid, state, stream, isPeerAuthority)
+      if (!n.avatar && !this.scene.getObjectByName(iid)) {
         n.initAvatar().then(result => {
           result.name = iid
-          if (!this.scene.getObjectByName(iid)) this.scene.add(result)
-          else {
-            console.log('already has this object')
+          if (!this.scene.getObjectByName(iid)) {
+            this.scene.add(result)
+          } else {
+            console.log('already has this object', iid)
           }
         })
       }
+      return n
     }
     this.removeNeighbor = function (iid) {
       let n = this.neighborsSet.removeNeighbor(iid)

@@ -20,7 +20,7 @@ const state = {
     },
     properties: {
       displayName: '', // {string} required: a human readable name to be displayed
-      sound: false, // {boolean} optional: defaults to true. false === mute
+      sound: true, // {boolean} optional: defaults to true. false === mute
       mic: false, // {boolean} optional: defaults to true. false === muted microphone
       video: false, // {boolean} optional: defaults to true. false === muted microphone
       virtualPosition: true, // {boolean} optional: defaults to false. Is this person physically in the position that they are in the digital universe. (true === they are not physically present there)
@@ -29,7 +29,10 @@ const state = {
     customState: {
       // developer defined state for their universe
       // you can use this to pass arbitrary data to other entities in your neighborhood
-      avatarUrl: ''
+      avatarUrl: '',
+      webrtc: {
+        streamId: null
+      }
     }
   },
   locations: {
@@ -79,6 +82,11 @@ const mutations = {
     state.entityState.geo.lat = payload.lat
     state.entityState.geo.lng = payload.lng
     state.entityState.geo.altitude = payload.altitude
+  },
+  SET_STREAM_ID (state, payload) {
+    if (!state.entityState.customState) state.entityState.customState = {}
+    if (!state.entityState.customState.webrtc) state.entityState.customState.webrtc = {}
+    state.entityState.customState.webrtc.streamId = payload
   },
   SET_UNIVERSE (state, payload) {
     state.entityState.universe = payload

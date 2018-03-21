@@ -16,13 +16,20 @@
           <div class="level ">
             <div class="level-left">
               <div class="level-item">
-                <span class="icon is-small" v-show="neighborState.properties.mic"><i class="fas fa-microphone"></i></span>
-                <span class="icon is-small" v-show="!neighborState.properties.mic"><i class="fas fa-microphone-slash"></i></span>
+                <span class="icon is-small" v-bind:class="{ 'has-text-info': neighborState.properties.mic, 'has-text-danger': !neighborState.properties.mic }">
+                  <i class="fas fa-microphone"></i>
+                </span>
               </div>
               <div class="level-item">
-                <span class="icon is-small" v-show="neighborState.properties.sound"><i class="fas fa-volume-up"></i></span>
-                <span class="icon is-small" v-show="!neighborState.properties.sound"><i class="fas fa-volume-off"></i></span>
+                <span class="icon is-small" v-bind:class="{ 'has-text-info': neighborState.properties.sound, 'has-text-danger': !neighborState.properties.sound }">
+                  <i class="fas fa-volume-up"></i>
+                </span>
               </div>
+              <!-- <div class="video">
+                <video src="#" autoplay poster="" v-bind:ref="neighborState.iid">
+                  Your browser does not support the video tag.
+                </video>
+              </div> -->
             </div>
           </div>
         </div>

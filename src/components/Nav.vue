@@ -6,15 +6,14 @@
         <a class="navbar-item is-hidden-mobile" href="/">
           <img src="../assets/logo-menu.svg" alt="exaQuark" width="112" >
         </a>
-        <a class="navbar-item" @click="$emit('onMicClicked')">
-          <span class="icon is-small" v-bind:class="{ 'has-text-info': mic }"><i class="fas fa-microphone"></i></span>
+        <a class="navbar-item" @click="$emit('onSoundClicked')" >
+          <span class="icon is-small" v-bind:class="{ 'has-text-info': sound, 'has-text-danger': !sound }"><i class="fas fa-volume-up"></i></span>
         </a>
-        <a class="navbar-item" @click="$emit('onAudioClicked')">
-          <span class="icon is-small" v-bind:class="{ 'has-text-info': sound }"><i class="fas fa-volume-up"></i></span>
+
+        <a class="navbar-item" @click="$emit('onMicClicked')" >
+          <span class="icon is-small" v-bind:class="{ 'has-text-info': mic, 'has-text-danger': !mic }"><i class="fas fa-microphone"></i></span>
         </a>
-        <a class="navbar-item" @click="$emit('onVideoClicked')">
-          <span class="icon is-small" v-bind:class="{ 'has-text-info': video }"><i class="fas fa-video"></i></span>
-        </a>
+
         <a class="navbar-item" @click="toggleLocationModal()">
           <span class="icon is-small has-text-info">
             <i class="far fa-map"></i>
@@ -26,11 +25,11 @@
           </span>
         </a>
 
-        <div class="navbar-burger" @click="toggleMobileMenu()">
+        <!-- <div class="navbar-burger" @click="toggleMobileMenu()">
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </div> -->
       </div>
       <div class="navbar-menu" v-bind:class="{ 'is-active': showMobileMenu }">
         <div class="navbar-end">
